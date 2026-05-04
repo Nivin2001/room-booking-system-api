@@ -1,11 +1,14 @@
 <?php
 
 namespace App\Models;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Space extends Model
+class Space extends Model implements HasMedia
 {
+     use InteractsWithMedia;
     //
     protected $fillable = [
         'title',
@@ -16,6 +19,11 @@ class Space extends Model
         'status',
         'created_by',
     ];
+      public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('images')
+             ->useDisk('public');
+    }
   public function categories()
     {
         return $this->belongsToMany(Category::class, 'category_space');

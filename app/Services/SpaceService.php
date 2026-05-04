@@ -132,4 +132,55 @@ public function delete($id)
 
     $space->delete();
 }
+  public function list($filters = [])
+{
+    $query = Space::query()->with('categories');
+
+    // 🔍 search
+    if (!empty($filters['search'])) {
+        $query->where(function ($q) use ($filters) {
+            $q->where('title', 'like', '%' . $filters['search'] . '%')
+              ->orWhere('description', 'like', '%' . $filters['search'] . '%');
+        });
+    }
+
+    // 💰 price range
+    if (!empty($filters['min_price'])) {
+        $query->where('price_per_hour', '>=', $filters['min_price']);
+    }
+
+    if (!empty($filters['max_price'])) {
+        $query->where('price_per_hour', '<=', $filters['max_price']);
+    }
+
+    // 👥 capacity
+    if (!empty($filters['capacity'])) {
+        // $query->where('capacity', '>=', $filters['capacity']);
+        $query->where('capacity', $filters['capacity']);
+    }
+
+    // 🏷️ category
+    if (!empty($filters['category_id'])) {
+        $query->whereHas('categories', function ($q) use ($filters) {
+            $q->where('categories.id', $filters['category_id']);
+        });
+    }
+
+    // 🔄 sorting
+    if (!empty($filters['sort'])) {
+        switch ($filters['sort']) {
+            case 'price_asc':
+                $query->orderBy('price_per_hour', 'asc');
+                break;
+            case 'price_desc':
+                $query->orderBy('price_per_hour', 'desc');
+                break;
+            case 'newest':
+                $query->latest();
+                break;
+        }
+    }
+
+    return $query->get();
+}
 }

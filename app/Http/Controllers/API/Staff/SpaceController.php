@@ -9,6 +9,7 @@ use App\Models\Space;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class SpaceController extends Controller
 {
@@ -19,6 +20,13 @@ class SpaceController extends Controller
     {
         $this->service = $service;
     }
+
+    public function index(Request $request)
+{
+    $spaces = $this->service->list($request->all());
+
+    return SpaceResource::collection($spaces);
+}
 
       public function store(Request $request)
 {
@@ -50,12 +58,12 @@ class SpaceController extends Controller
     /**
      * 🏢 Get all spaces (with filters)
      */
-    public function index(Request $request)
-    {
-        $spaces = $this->service->getCustomerSpaces($request->all());
+    // public function index(Request $request)
+    // {
+    //     $spaces = $this->service->getCustomerSpaces($request->all());
 
-        return SpaceResource::collection($spaces);
-    }
+    //     return SpaceResource::collection($spaces);
+    // }
 
     /**
      * 🔍 Show single space
@@ -143,6 +151,82 @@ public function syncCategories(Request $request, $id)
         'data' => $space->load('categories')
     ]);
 }
+public function uploadImage(Request $request, Space $space)
+{
+    $request->validate([
+        'image' => 'required|image|mimes:jpg,jpeg,png|max:2048'
+    ]);
 
+    $this->authorize('update', $space);
+
+    $space->addMediaFromRequest('image')
+          ->toMediaCollection('images');
+
+    return response()->json([
+        'message' => 'Image uploaded successfully'
+    ]);
+}
+
+public function uploadMultipleImages(Request $request, Space $space)
+{
+    $request->validate([
+        'images' => 'required|array',
+        'images.*' => 'image|mimes:jpg,jpeg,png|max:2048'
+    ]);
+
+    $this->authorize('update', $space);
+
+    foreach ($request->file('images') as $image) {
+        $space->addMedia($image)->toMediaCollection('images');
+    }
+
+    return response()->json([
+        'message' => 'Images uploaded successfully'
+    ]);
+}
+  public function downloadImage($id)
+{
+    $media = Media::findOrFail($id);
+
+ return response()->download(
+    $media->getPath(),
+    $media->file_name,
+    [
+        'Content-Type' => $media->mime_type,
+        'Content-Disposition' => 'attachment; filename="'.$media->file_name.'"'
+    ]
+);
+}
+
+
+public function deleteImage($id)
+{
+    $media = Media::findOrFail($id);
+
+    // $this->authorize('update', $media->model);
+
+    $media->delete();
+
+    return response()->json([
+        'message' => 'Image deleted successfully'
+    ]);
+}
+
+public function setMainImage($id)
+{
+    $media = Media::findOrFail($id);
+
+    $model = $media->model;
+
+    $model->media()
+        ->where('collection_name', 'images')
+        ->update(['order_column' => 999]);
+
+    $media->update(['order_column' => 1]);
+
+    return response()->json([
+        'message' => 'Main image set successfully'
+    ]);
+}
 
 }

@@ -185,8 +185,10 @@ public function list($filters)
         $booking->update([
             'status' => 'confirmed'
         ]);
+
+          event(new BookingApproved($booking));
             // 🔔 notify customer
-    $booking->user->notify(new BookingApproved($booking));
+    // $booking->user->notify(new BookingApproved($booking));
 
 
         return $booking;
@@ -203,8 +205,35 @@ public function list($filters)
         $booking->update([
             'status' => 'rejected'
         ]);
-        $booking->user->notify(new BookingRejected($booking));
+
+      event(new BookingRejected($booking));
+        // $booking->user->notify(new BookingRejected($booking));
 
         return $booking;
     }
+    public function updateCustomerBooking($user, $bookingId, $data)
+{
+    $booking = Booking::where('id', $bookingId)
+        ->where('user_id', $user->id)
+        ->firstOrFail();
+
+    $overlap = Booking::where('space_id', $booking->space_id)
+        ->where('id', '!=', $bookingId)
+        ->where(function ($query) use ($data) {
+            $query->where('start_time', '<', $data['end_time'])
+                  ->where('end_time', '>', $data['start_time']);
+        })
+        ->exists();
+
+    if ($overlap) {
+        throw new \Exception('This time slot is already booked');
+    }
+
+    $booking->update([
+        'start_time' => $data['start_time'],
+        'end_time'   => $data['end_time'],
+    ]);
+
+    return $booking;
+}
 }

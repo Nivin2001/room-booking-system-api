@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\Api\Admin\CategoryController;
+use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\API\Admin\UserController;
 use App\Http\Controllers\Api\Customer\BookingController;
 use App\Http\Controllers\Api\Staff\BookingController as StaffBookingController;
@@ -31,6 +32,7 @@ Route::prefix('v1')->group(function () {
             Route::get('my-bookings', [BookingController::class, 'myBookings']);
             // ❌ Cancel booking
             Route::post('bookings/{id}/cancel', [BookingController::class, 'cancelBooking']);
+            Route::put('bookings/{id}', [BookingController::class, 'update']);
             // notification
             Route::get('notifications', [UserController::class, 'notifications']);
         });
@@ -50,7 +52,14 @@ Route::prefix('v1')->group(function () {
         Route::delete('/spaces/{id}', [SpaceController::class, 'destroy']);
         // Connect the space with the sutiable catgory like space A Meeting room
         Route::post('spaces/{id}/categories', [SpaceController::class, 'syncCategories']);
+        // Handle Images
+        Route::post('spaces/{space}/upload-image', [SpaceController::class, 'uploadImage']);
+        Route::post('spaces/{space}/upload-images', [SpaceController::class, 'uploadMultipleImages']);
+        Route::delete('media/{id}', [SpaceController::class, 'deleteImage']);
+        Route::post('media/{id}/set-main', [SpaceController::class, 'setMainImage']);
+
     });
+            Route::get('media/{id}/download', [SpaceController::class, 'downloadImage']);
 
     // 👑 Admin
     // admin route protected by auth and admin middleware
@@ -67,5 +76,7 @@ Route::prefix('v1')->group(function () {
         Route::put('/categories/{id}', [CategoryController::class, 'update']);
         Route::delete('/categories/{id}', [CategoryController::class, 'destroy']);
         Route::get('bookings', [AdminBookingController::class, 'index']);
+
+        Route::get('dashboard', [DashboardController::class, 'index']);
     });
 });

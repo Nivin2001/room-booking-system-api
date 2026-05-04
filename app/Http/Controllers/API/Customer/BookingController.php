@@ -56,59 +56,6 @@ public function store(Request $request)
 
 
 
-// public function store(Request $request)
-// {
-//     $request->validate([
-//         'space_id' => 'required|exists:spaces,id',
-//         'date' => 'required|date',
-//         'slot' => 'required'
-//     ]);
-
-//     $space = Space::find($request->space_id);
-
-//     if (!$space) {
-//         return response()->json([
-//             'success' => false,
-//             'message' => 'Space not found'
-//         ], 404);
-//     }
-
-//     // ⏱️ build time
-//     [$start, $end] = $this->service->buildSlotTime(
-//         $request->date,
-//         $request->slot
-//     );
-
-//     // 📦 create booking
-//     $result = $this->service->createCustomerBooking(
-//         auth()->user(),
-//         [
-//             'space_id' => $space->id,
-//             'start_time' => $start,
-//             'end_time' => $end,
-//         ]
-//     );
-
-//     // ❌ fail case
-//     if (!$result['success']) {
-//         return response()->json([
-//             'success' => false,
-//             'message' => $result['message']
-//         ], 422);
-//     }
-
-//     // 📩 SUCCESS → send notification (THIS IS IMPORTANT)
-//     $booking = $result['data'];
-
-//     // // $booking->user->notify(new BookingCreated($booking));
-//     // auth()->user()->notify(new BookingCreated($booking));
-
-//     return response()->json([
-//         'success' => true,
-//         'message' => $result['message'],
-//         'data' => $booking
-//     ], 201);
-// }
 
 public function slots($id, Request $request)
 {
@@ -185,6 +132,32 @@ public function slots($id, Request $request)
             'data' => $booking
         ]);
     }
+    public function update(Request $request, $id)
+{
+    $request->validate([
+        'start_time' => 'required|date',
+        'end_time' => 'required|date|after:start_time',
+    ]);
 
+    try {
+        $booking = $this->service->updateCustomerBooking(
+            auth()->user(),
+            $id,
+            $request->all()
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Booking updated successfully',
+            'data' => $booking
+        ]);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => $e->getMessage()
+        ], 400);
+    }
+}
 
 }
