@@ -5,17 +5,13 @@ namespace App\Console\Commands;
 use App\Models\Booking;
 use App\Notifications\BookingReminderNotification;
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Carbon;
+use App\Jobs\SendBookingReminderJob;
 
 class SendBookingReminders extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'bookings:reminders';
-
     protected $description = 'Send reminders for upcoming bookings';
 
     public function handle()
@@ -23,23 +19,18 @@ class SendBookingReminders extends Command
         $now = Carbon::now();
         $targetTime = $now->copy()->addHour();
 
-        $bookings = Booking::whereBetween('start_time', [
-                $targetTime->copy()->startOfMinute(),
-                $targetTime->copy()->endOfMinute()
-            ])
+        $bookings = Booking::where('status', 'confirmed')
             ->where('reminder_sent', false)
-            ->with('user')
+         ->whereBetween('start_time', [
+    $targetTime->copy()->subMinutes(30),  // وسّع المجال
+    $targetTime->copy()->addMinutes(30)
+])
             ->get();
 
         foreach ($bookings as $booking) {
-            $booking->user->notify(new BookingReminderNotification($booking));
-
-            $booking->update([
-                'reminder_sent' => true
-            ]);
+            SendBookingReminderJob::dispatch($booking);
         }
 
-        $this->info('Reminders sent successfully');
+        $this->info('Reminders dispatched: ' . $bookings->count());
     }
-
 }

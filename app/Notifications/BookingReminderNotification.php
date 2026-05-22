@@ -52,6 +52,7 @@ class BookingReminderNotification extends Notification
     {
         return [
             'message' => 'Reminder: Your booking starts in 1 hour',
+            // 'message' => 'تذكير: حجزك بيبدأ بعد ساعة',
             'space' => $this->booking->space->title,
             'start_time' => $this->booking->start_time,
         ];

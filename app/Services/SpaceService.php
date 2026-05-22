@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Booking;
 use App\Models\Space;
 use App\Repositories\SpaceRepository;
-
 class SpaceService
 {
     protected $repo;

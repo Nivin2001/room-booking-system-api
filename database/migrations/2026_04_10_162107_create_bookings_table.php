@@ -23,7 +23,7 @@ return new class extends Migration
         $table->decimal('total_price', 10, 2)->nullable();
 
         $table->enum('status', [
-            'pending',
+            'pending_payment',
             'confirmed',
             'cancelled',
             'completed'

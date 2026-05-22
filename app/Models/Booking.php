@@ -14,7 +14,8 @@ class Booking extends Model
         'start_time',
         'end_time',
         'total_price',
-        'status'
+        'status',
+        'reminder_sent'
     ];
 
     public function user()

@@ -16,12 +16,12 @@ Route::prefix('v1')->group(function () {
     // 🔓 Public
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
+    Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 
     // 🔐 Protected route
     // customer route protected by auth and customer middleware
-    Route::middleware('auth:sanctum', 'role:customer')
-        ->prefix('customer')->group(function () {
+    Route::middleware(['auth:sanctum', 'role:customer'])->prefix('customer')->group(function () {
             // Space Modrations
             Route::get('spaces', [SpaceController::class, 'index']);
             Route::get('spaces/{id}', [SpaceController::class, 'show']);
