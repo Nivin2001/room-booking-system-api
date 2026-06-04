@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Staff;
 
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
+use App\Services\BookingApprovalService;
 use App\Services\BookingService;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -14,9 +15,11 @@ class BookingController extends Controller
     //
       use AuthorizesRequests, ValidatesRequests;
    protected $service;
-   public function __construct(BookingService $service)
+   protected $approvalService;
+   public function __construct(BookingService $service,BookingApprovalService $approvalService)
     {
         $this->service = $service;
+        $this->approvalService = $approvalService;
     }
       /**
      * 📋 Get all bookings (Staff)
@@ -34,7 +37,7 @@ class BookingController extends Controller
     public function approve($id)
     {
         try {
-            $booking = $this->service->approve($id);
+            $booking = $this->approvalService->approve($id);
             $this->authorize('approve', $booking);
 
             return response()->json([
@@ -52,7 +55,7 @@ class BookingController extends Controller
     public function reject($id)
     {
         try {
-            $booking = $this->service->reject($id);
+            $booking = $this->approvalService->reject($id);
 
             return response()->json([
                 'success' => true,

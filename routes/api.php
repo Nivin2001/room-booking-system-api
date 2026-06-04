@@ -6,38 +6,42 @@ use App\Http\Controllers\Api\Admin\CategoryController;
 use App\Http\Controllers\Api\Admin\DashboardController;
 use App\Http\Controllers\API\Admin\UserController;
 use App\Http\Controllers\Api\Customer\BookingController;
+use App\Http\Controllers\Api\Customer\PaymentController;
 use App\Http\Controllers\Api\Staff\BookingController as StaffBookingController;
 use App\Http\Controllers\Api\Staff\SpaceController;
-
+use App\Http\Controllers\Api\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
-  // public route
+
+// public route
 Route::prefix('v1')->group(function () {
     Route::get('/test-mail', [AdminBookingController::class, 'testMail']);
     // 🔓 Public
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
-
+    Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
 
     // 🔐 Protected route
     // customer route protected by auth and customer middleware
     Route::middleware(['auth:sanctum', 'role:customer'])->prefix('customer')->group(function () {
-            // Space Modrations
-            Route::get('spaces', [SpaceController::class, 'index']);
-            Route::get('spaces/{id}', [SpaceController::class, 'show']);
-            Route::get('spaces/{id}/availability', [SpaceController::class, 'availability']);
-            Route::get('spaces/{id}/slots', [BookingController::class, 'slots']);
-            Route::post('bookings', [BookingController::class, 'store']);
-            // 📋 My bookings
-            Route::get('my-bookings', [BookingController::class, 'myBookings']);
-            // ❌ Cancel booking
-            Route::post('bookings/{id}/cancel', [BookingController::class, 'cancelBooking']);
-            Route::put('bookings/{id}', [BookingController::class, 'update']);
-            // notification
-            Route::get('notifications', [UserController::class, 'notifications']);
-        });
+        // Space Modrations
+        Route::get('spaces', [SpaceController::class, 'index']);
+        Route::get('spaces/{id}', [SpaceController::class, 'show']);
+        Route::get('spaces/{id}/availability', [SpaceController::class, 'availability']);
+        Route::get('spaces/{id}/slots', [BookingController::class, 'slots']);
+        Route::post('bookings', [BookingController::class, 'store']);
+        Route::post('/payments/checkout', [PaymentController::class, 'checkout']);
 
-          // staff route protected by auth and staff middleware
+        // 📋 My bookings
+        Route::get('my-bookings', [BookingController::class, 'myBookings']);
+        // ❌ Cancel booking
+        Route::post('bookings/{id}/cancel', [BookingController::class, 'cancelBooking']);
+        Route::put('bookings/{id}', [BookingController::class, 'update']);
+        // notification
+        Route::get('notifications', [UserController::class, 'notifications']);
+    });
+
+    // staff route protected by auth and staff middleware
     Route::middleware(['auth:sanctum', 'role:staff'])->prefix('staff')->group(function () {
 
         // 📋 Bookings
@@ -57,9 +61,8 @@ Route::prefix('v1')->group(function () {
         Route::post('spaces/{space}/upload-images', [SpaceController::class, 'uploadMultipleImages']);
         Route::delete('media/{id}', [SpaceController::class, 'deleteImage']);
         Route::post('media/{id}/set-main', [SpaceController::class, 'setMainImage']);
-
     });
-            Route::get('media/{id}/download', [SpaceController::class, 'downloadImage']);
+    Route::get('media/{id}/download', [SpaceController::class, 'downloadImage']);
 
     // 👑 Admin
     // admin route protected by auth and admin middleware

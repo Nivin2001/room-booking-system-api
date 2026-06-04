@@ -11,30 +11,30 @@ return new class extends Migration
      */
     public function up(): void
     {
-         Schema::create('payments', function (Blueprint $table) {
-        $table->id();
+        Schema::create('payments', function (Blueprint $table) {
+    $table->id();
 
-        $table->foreignId('booking_id')->constrained()->cascadeOnDelete();
-        $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('booking_id')->constrained()->cascadeOnDelete();
 
-        $table->decimal('amount', 10, 2);
+    $table->string('provider')->default('stripe');
+    $table->string('provider_reference')->nullable(); // checkout session id
 
-        $table->string('payment_method')->nullable();
-        // cash, card, stripe...
+    $table->string('payment_intent_id')->nullable();
 
-        $table->enum('status', [
-            'pending',
-            'paid',
-            'failed',
-            'refunded'
-        ])->default('pending');
+    $table->string('status');
 
-        $table->string('transaction_id')->nullable();
+    $table->decimal('amount', 10, 2);
+    $table->string('currency', 10)->default('USD');
 
-        $table->timestamps();
-    });
+    $table->timestamp('paid_at')->nullable();
+    $table->timestamp('failed_at')->nullable();
+
+    $table->timestamps();
+
+    $table->index('provider_reference');
+});
 }
-    
+
 
     /**
      * Reverse the migrations.

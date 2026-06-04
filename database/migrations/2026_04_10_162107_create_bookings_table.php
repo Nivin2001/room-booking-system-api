@@ -10,28 +10,34 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-{
-    Schema::create('bookings', function (Blueprint $table) {
-        $table->id();
+    {
+     Schema::create('bookings', function (Blueprint $table) {
+    $table->id();
 
-        $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-        $table->foreignId('space_id')->constrained()->cascadeOnDelete();
+    $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+    $table->foreignId('space_id')->constrained()->cascadeOnDelete();
 
-        $table->dateTime('start_time');
-        $table->dateTime('end_time');
+    $table->dateTime('start_time');
+    $table->dateTime('end_time');
 
-        $table->decimal('total_price', 10, 2)->nullable();
+    $table->decimal('total_amount', 10, 2);
+    $table->string('currency', 10)->default('USD');
 
-        $table->enum('status', [
-            'pending_payment',
-            'confirmed',
-            'cancelled',
-            'completed'
-        ])->default('pending');
+    $table->string('status');
 
-        $table->timestamps();
-    });
-}
+    $table->dateTime('expires_at')->nullable();
+
+    $table->foreignId('approved_by')->nullable()->constrained('users')->nullOnDelete();
+    $table->timestamp('approved_at')->nullable();
+
+    $table->timestamp('cancelled_at')->nullable();
+    $table->timestamp('rejected_at')->nullable();
+
+    $table->timestamps();
+
+    $table->index(['space_id', 'start_time', 'end_time']);
+});
+    }
 
 
     /**
