@@ -35,7 +35,7 @@ Route::prefix('v1')->group(function () {
         // 📋 My bookings
         Route::get('my-bookings', [BookingController::class, 'myBookings']);
         // ❌ Cancel booking
-        Route::post('bookings/{id}/cancel', [BookingController::class, 'cancelBooking']);
+        Route::delete('bookings/{id}/cancel', [BookingController::class, 'cancelBooking']);
         Route::put('bookings/{id}', [BookingController::class, 'update']);
         // notification
         Route::get('notifications', [UserController::class, 'notifications']);

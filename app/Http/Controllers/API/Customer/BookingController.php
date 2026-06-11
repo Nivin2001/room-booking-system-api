@@ -73,7 +73,7 @@ $end = $selectedSlot['end'];
 
         return response()->json([
             'success' => true,
-            'date' => $request->date,
+            // 'date' => $request->date,
             'slots' => $slots
         ]);
     }

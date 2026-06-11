@@ -22,7 +22,7 @@ class SendBookingReminders extends Command
         $bookings = Booking::where('status', 'confirmed')
             ->where('reminder_sent', false)
          ->whereBetween('start_time', [
-    $targetTime->copy()->subMinutes(30),  // وسّع المجال
+    $targetTime->copy()->subMinutes(30),  
     $targetTime->copy()->addMinutes(30)
 ])
             ->get();

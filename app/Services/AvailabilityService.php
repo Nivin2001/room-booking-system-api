@@ -25,29 +25,31 @@ class AvailabilityService
             ->exists();
     }
     // ✅ ADD THIS (missing method)
-    public function getSlots($spaceId, $date)
-    {
-        $slots = [];
+   public function getSlots($spaceId, $date)
+{
+    $slots = [];
 
-        for ($hour = 8; $hour < 20; $hour++) {
+    for ($hour = 8; $hour < 24; $hour++) {
 
-            $time = str_pad($hour, 2, '0', STR_PAD_LEFT) . ':00';
+        $time = sprintf('%02d:00', $hour);
 
-            $start = Carbon::parse($date . ' ' . $time);
-            $end = (clone $start)->addHour();
+        $start = Carbon::parse($date . ' ' . $time);
+        $end = $start->copy()->addHour();
 
-            $available = $this->isAvailable($spaceId, $start, $end);
-
-            $slots[] = [
-                'time' => $time,
-                'start' => $start,
-                'end' => $end,
-                'available' => $available
-            ];
-        }
-
-        return $slots;
+        $slots[] = [
+            'time' => $time,
+            'start' => $start->format('Y-m-d H:i:s'),
+            'end' => $end->format('Y-m-d H:i:s'),
+            'available' => $this->isAvailable(
+                $spaceId,
+                $start,
+                $end
+            )
+        ];
     }
+
+    return $slots;
+}
 }
 ?>
 

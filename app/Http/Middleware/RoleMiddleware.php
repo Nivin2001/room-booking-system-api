@@ -17,14 +17,12 @@ class RoleMiddleware
     {
         $user = $request->user();
 
-        // ❌ مش مسجل دخول
         if (!$user) {
             return response()->json([
                 'message' => 'Unauthenticated'
             ], 401);
         }
 
-        // ❌ ما عنده صلاحية
         if (!in_array($user->role, $roles)) {
             return response()->json([
                 'message' => 'Forbidden - insufficient role'

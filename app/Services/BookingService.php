@@ -73,45 +73,63 @@ class BookingService
     }
 
     public function updateBooking($user, $id, array $data): Booking
-    {
-        $booking = Booking::where('id', $id)
-            ->where('user_id', $user->id)
-            ->firstOrFail();
+{
+    $booking = Booking::where('id', $id)
+        ->where('user_id', $user->id)
+        ->firstOrFail();
 
-        $isAvailable = $this->availabilityService->isAvailable(
-            $booking->space_id,
-            $data['start_time'],
-            $data['end_time']
-        );
-
-        if (!$isAvailable) {
-            throw new \Exception('This time slot is already booked');
-        }
-
-        $booking->update([
-            'start_time' => $data['start_time'],
-            'end_time' => $data['end_time'],
-        ]);
-
-        return $booking->fresh();
+    if ($booking->status === BookingStatus::Cancelled) {
+        throw new \Exception('Cannot update a cancelled booking');
     }
 
-    public function cancelBooking($id): Booking
-    {
-        $booking = Booking::findOrFail($id);
-
-        if ($booking->status === BookingStatus::Cancelled) {
-            throw new \Exception('Already cancelled');
-        }
-
-        if (now()->greaterThan($booking->start_time)) {
-            throw new \Exception('Cannot cancel past booking');
-        }
-
-        $booking->update([
-            'status' => BookingStatus::Cancelled
-        ]);
-
-        return $booking->fresh();
+    // not allow update if already confirmed, as the payment is done and the slot is reserved, if they want to change the time, they need to cancel and rebook or request reschedule
+    if ($booking->status === BookingStatus::Confirmed) {
+        throw new \Exception('Cannot update a confirmed booking. Please cancel and rebook or request reschedule');
     }
+
+    if (now()->greaterThan($booking->start_time)) {
+        throw new \Exception('Cannot update past or ongoing booking');
+    }
+
+    $isAvailable = $this->availabilityService->isAvailable(
+        $booking->space_id,
+        $data['start_time'],
+        $data['end_time']
+    );
+
+    if (!$isAvailable) {
+        throw new \Exception('This time slot is already booked');
+    }
+
+    $booking->update([
+        'start_time' => $data['start_time'],
+        'end_time'   => $data['end_time'],
+    ]);
+
+    return $booking->fresh();
+}
+
+
+public function cancelBooking($id): Booking
+{
+    $booking = Booking::findOrFail($id);
+
+    if ($booking->status === BookingStatus::Cancelled) {
+        throw new \Exception('Already cancelled');
+    }
+
+    if (now()->greaterThan($booking->start_time)) {
+        throw new \Exception('Cannot cancel past or ongoing booking');
+    }
+ // already paid but not started yet,allow refund process
+    if ($booking->status === BookingStatus::Confirmed) {
+        throw new \Exception('Confirmed booking cannot be cancelled directly. Refund required');
+    }
+
+    $booking->update([
+        'status' => BookingStatus::Cancelled
+    ]);
+
+    return $booking->fresh();
+}
 }
