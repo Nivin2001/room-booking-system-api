@@ -203,7 +203,7 @@ public function deleteImage($id)
 {
     $media = Media::findOrFail($id);
 
-    // $this->authorize('update', $media->model);
+    $this->authorize('update', $media->model);
 
     $media->delete();
 
@@ -217,6 +217,8 @@ public function setMainImage($id)
     $media = Media::findOrFail($id);
 
     $model = $media->model;
+
+    $this->authorize('update', $model);
 
     $model->media()
         ->where('collection_name', 'images')

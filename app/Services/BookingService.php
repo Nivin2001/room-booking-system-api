@@ -2,6 +2,7 @@
 namespace App\Services;
 
 use App\Enums\BookingStatus;
+use App\Events\BookingCreated;
 use App\Models\Booking;
 use App\Services\AvailabilityService;
 use App\Services\PricingService;
@@ -14,40 +15,47 @@ class BookingService
         protected PricingService $pricingService
     ) {}
 
-    public function createBooking($user, array $data): Booking
-    {
-        return DB::transaction(function () use ($user, $data) {
+   public function createBooking($user, array $data): Booking
+{
+    $booking = DB::transaction(function () use ($user, $data) {
 
-            // 1. Check availability
-            $isAvailable = $this->availabilityService->isAvailable(
-                $data['space_id'],
-                $data['start_time'],
-                $data['end_time']
-            );
+        // 1. Check availability
+        $isAvailable = $this->availabilityService->isAvailable(
+            $data['space_id'],
+            $data['start_time'],
+            $data['end_time']
+        );
 
-            if (!$isAvailable) {
-                throw new \Exception('Space is not available');
-            }
+        if (!$isAvailable) {
+            throw new \Exception('Space is not available');
+        }
 
-            // 2. Calculate price
-            $price = $this->pricingService->calculatePrice(
-                $data['space_id'],
-                $data['start_time'],
-                $data['end_time']
-            );
+        // 2. Calculate price
+        $price = $this->pricingService->calculatePrice(
+            $data['space_id'],
+            $data['start_time'],
+            $data['end_time']
+        );
 
-            // 3. Create booking
-            return Booking::create([
-                'user_id' => $user->id,
-                'space_id' => $data['space_id'],
-                'start_time' => $data['start_time'],
-                'end_time' => $data['end_time'],
-                'total_amount' => $price,
-                'status' =>BookingStatus::PendingPayment,
-                'expires_at' => now()->addMinutes(10),
-            ]);
-        });
-    }
+        // 3. Create booking
+        return Booking::create([
+            'user_id' => $user->id,
+            'space_id' => $data['space_id'],
+            'start_time' => $data['start_time'],
+            'end_time' => $data['end_time'],
+            'total_amount' => $price,
+            'status' => BookingStatus::PendingPayment,
+            'expires_at' => now()->addMinutes(10),
+        ]);
+    });
+
+    // 🔥 خارج الترانزاكشن (صح)
+    DB::afterCommit(function () use ($booking) {
+        event(new BookingCreated($booking));
+    });
+
+    return $booking;
+}
 
     public function getSlots($spaceId, $date)
     {
@@ -56,12 +64,35 @@ class BookingService
 
     public function getBooking($id)
     {
-        return Booking::with(['space', 'customer'])->findOrFail($id);
+        return Booking::with(['space', 'user'])->findOrFail($id);
     }
 
     public function getAllBookings()
     {
-        return Booking::with(['space', 'customer'])->latest()->get();
+        return Booking::with(['space', 'user'])->latest()->get();
+    }
+
+    public function list(array $filters = [])
+    {
+        $query = Booking::with(['space', 'user']);
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (!empty($filters['space_id'])) {
+            $query->where('space_id', $filters['space_id']);
+        }
+
+        if (!empty($filters['user_id'])) {
+            $query->where('user_id', $filters['user_id']);
+        }
+
+        if (!empty($filters['date'])) {
+            $query->whereDate('start_time', $filters['date']);
+        }
+
+        return $query->latest()->get();
     }
 
     public function getUserBookings($userId)
@@ -110,9 +141,11 @@ class BookingService
 }
 
 
-public function cancelBooking($id): Booking
+public function cancelBooking($user, $id): Booking
 {
-    $booking = Booking::findOrFail($id);
+    $booking = Booking::where('id', $id)
+        ->where('user_id', $user->id)
+        ->firstOrFail();
 
     if ($booking->status === BookingStatus::Cancelled) {
         throw new \Exception('Already cancelled');

@@ -7,7 +7,7 @@ use App\Notifications\BookingCreatedNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 
-class SendBookingNotification
+class SendBookingNotification implements ShouldQueue
 {
     /**
      * Create the event listener.

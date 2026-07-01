@@ -138,7 +138,7 @@ $end = $selectedSlot['end'];
      */
     public function cancelBooking($id)
     {
-        $booking = $this->service->cancelBooking($id);
+        $booking = $this->service->cancelBooking(Auth::user(), $id);
 
         return response()->json([
             'success' => true,

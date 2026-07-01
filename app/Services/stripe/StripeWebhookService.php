@@ -3,6 +3,9 @@
 namespace App\Services\Stripe;
 
 use App\Enums\BookingStatus;
+use App\Events\PaymentFailed;
+use App\Events\PaymentSucceeded;
+use App\Events\RefundCompleted;
 use App\Models\Payment;
 use App\Models\Booking;
 use Illuminate\Http\Request;
@@ -66,6 +69,8 @@ class StripeWebhookService
         $booking->update([
             'status' => 'pending_staff_approval',
         ]);
+      event(new PaymentSucceeded($booking, $payment));
+
 
         Log::info('Payment successful', [
             'payment_id' => $paymentId,
@@ -91,6 +96,7 @@ class StripeWebhookService
         $payment->booking->update([
             'status' => 'payment_failed',
         ]);
+        event(new PaymentFailed($payment->booking, $payment->id));
 
         return response()->json(['failed_handled' => true]);
     }
@@ -114,6 +120,7 @@ class StripeWebhookService
         $payment->booking->update([
             'status' => BookingStatus::Rejected,
         ]);
+        event(new RefundCompleted($payment, $payment->id));
 
         // $payment->booking->update([
         //     'status' => 'cancelled',

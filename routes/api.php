@@ -20,6 +20,17 @@ Route::prefix('v1')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
+    Route::get('/payment/success', function (Request $request) {
+    return response()->json([
+        'message' => 'Payment completed successfully. Please wait confirmation.'
+    ]);
+});
+
+Route::get('/payment/cancel', function () {
+    return response()->json([
+        'message' => 'Payment cancelled.'
+    ]);
+    });
 
     // 🔐 Protected route
     // customer route protected by auth and customer middleware
@@ -56,7 +67,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/spaces/{id}', [SpaceController::class, 'destroy']);
         // Connect the space with the sutiable catgory like space A Meeting room
         Route::post('spaces/{id}/categories', [SpaceController::class, 'syncCategories']);
-        // Handle Images
+        // Handle Images (Spaite Media Libary)
         Route::post('spaces/{space}/upload-image', [SpaceController::class, 'uploadImage']);
         Route::post('spaces/{space}/upload-images', [SpaceController::class, 'uploadMultipleImages']);
         Route::delete('media/{id}', [SpaceController::class, 'deleteImage']);

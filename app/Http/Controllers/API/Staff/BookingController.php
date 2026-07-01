@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Services\BookingApprovalService;
 use App\Services\BookingService;
+use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -37,14 +38,20 @@ class BookingController extends Controller
     public function approve($id)
     {
         try {
-            $booking = $this->approvalService->approve($id);
+            $booking = Booking::with('space')->findOrFail($id);
             $this->authorize('approve', $booking);
+
+            $booking = $this->approvalService->approve($booking->id);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Booking approved successfully',
                 'data' => $booking
             ]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'message' => 'Forbidden - you are not allowed to approve this booking'
+            ], 403);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()
@@ -55,13 +62,20 @@ class BookingController extends Controller
     public function reject($id)
     {
         try {
-            $booking = $this->approvalService->reject($id);
+            $booking = Booking::with('space')->findOrFail($id);
+            $this->authorize('reject', $booking);
+
+            $booking = $this->approvalService->reject($booking->id);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Booking rejected successfully',
                 'data' => $booking
             ]);
+        } catch (AuthorizationException $e) {
+            return response()->json([
+                'message' => 'Forbidden - you are not allowed to reject this booking'
+            ], 403);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => $e->getMessage()

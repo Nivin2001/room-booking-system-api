@@ -3,10 +3,11 @@
 namespace App\Listeners;
 
 use App\Events\BookingApproved;
+use App\Notifications\BookingApproved as BookingApprovedNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Queue\InteractsWithQueue;
 
-class SendBookingApprovedNotification
+
+class SendBookingApprovedNotification implements ShouldQueue
 {
     /**
      * Create the event listener.
@@ -22,7 +23,7 @@ class SendBookingApprovedNotification
      public function handle($event)
     {
         $event->booking->user->notify(
-            new SendBookingApprovedNotification($event->booking)
+            new BookingApprovedNotification($event->booking)
         );
     }
 

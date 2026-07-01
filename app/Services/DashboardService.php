@@ -17,7 +17,7 @@ class DashboardService
         $bookingsToday = Booking::whereDate('created_at', Carbon::today())->count();
 
         // 💰 total revenue
-        $totalRevenue = Booking::sum('total_price');
+        $totalRevenue = Booking::sum('total_amount');
 
         // 🔥 most booked spaces
         $topSpaces = Booking::select('space_id', DB::raw('count(*) as total'))

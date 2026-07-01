@@ -76,4 +76,12 @@ class BookingPolicy
     {
         return $booking->space->created_by === $user->id;
     }
+
+    /**
+     * Allow staff to reject bookings for spaces they manage.
+     */
+    public function reject(User $user, Booking $booking)
+    {
+        return $booking->space->created_by === $user->id;
+    }
 }

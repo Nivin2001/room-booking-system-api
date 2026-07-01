@@ -22,7 +22,7 @@ class AuthController extends Controller
         'name' => $request->name,
         'email' => $request->email,
         'password' => bcrypt($request->password),
-        'role' => 'customer' // 👈 مهم جدًا
+        'role' => 'customer' 
     ]);
 
     $token = $user->createToken('customer_token')->plainTextToken;

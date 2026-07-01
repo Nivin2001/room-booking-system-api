@@ -4,6 +4,8 @@ namespace App\Services;
 use App\Enums\BookingStatus;
 use App\Models\Booking;
 use App\Enums\PaymentStatus;
+use App\Events\BookingApproved;
+use App\Events\BookingRejected;
 use App\Services\Stripe\StripeRefundService;
 use Illuminate\Support\Facades\DB;
 
@@ -24,6 +26,7 @@ class BookingApprovalService
         'approved_by' => auth()->id(),
         'approved_at' => now(),
     ]);
+    event(new BookingApproved($booking));
 
     return $booking->fresh();
 }
@@ -53,6 +56,7 @@ class BookingApprovalService
             'status' => BookingStatus::Rejected,
             'rejected_at' => now(),
         ]);
+            event(new BookingRejected($booking));
 
         return $booking->fresh();
     });

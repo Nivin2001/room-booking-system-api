@@ -19,11 +19,13 @@ class BookingCreated
      * Create a new event instance.
      */
 
-       public $booking;
+         public Booking $booking;
+
     public function __construct(Booking $booking)
     {
         $this->booking = $booking;
     }
+
 
     /**
      * Get the channels the event should broadcast on.

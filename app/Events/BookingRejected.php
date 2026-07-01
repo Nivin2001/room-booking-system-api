@@ -2,6 +2,7 @@
 
 namespace App\Events;
 
+use App\Models\Booking;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -17,13 +18,14 @@ class BookingRejected
     /**
      * Create a new event instance.
      */
-      public $booking;
+       public Booking $booking;
+    public ?string $reason;
 
-    public function __construct($booking)
+    public function __construct(Booking $booking, ?string $reason = null)
     {
         $this->booking = $booking;
+        $this->reason = $reason;
     }
-
     /**
      * Get the channels the event should broadcast on.
      *

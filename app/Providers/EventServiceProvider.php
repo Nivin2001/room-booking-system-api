@@ -13,10 +13,14 @@ use App\Listeners\SendBookingRejectedNotification;
 class EventServiceProvider extends ServiceProvider
 {
     protected $listen = [
-        BookingCreated::class => [
-            SendBookingNotification::class,
-        ],
-         BookingApproved::class => [
+        // BookingCreated::class => [
+        //     SendBookingNotification::class,
+        // ],
+
+    \App\Events\BookingCreated::class => [
+        \App\Listeners\SendBookingCreatedEmail::class,
+    ],
+       BookingApproved::class => [
       SendBookingApprovedNotification::class,
     ],
       BookingRejected::class => [

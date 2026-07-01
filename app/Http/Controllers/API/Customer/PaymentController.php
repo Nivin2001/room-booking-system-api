@@ -19,7 +19,9 @@ class PaymentController extends Controller
         $request->validate([
             'booking_id' => 'required|exists:bookings,id'
         ]);
-        $booking = Booking::findOrFail($request->booking_id);
+        $booking = Booking::where('id', $request->booking_id)
+            ->where('user_id', $request->user()->id)
+            ->firstOrFail();
     if ($booking->status !== BookingStatus::PendingPayment) {// enum vs enum
     // dd($booking->status, BookingStatus::PendingPayment->value);
             return response()->json([
