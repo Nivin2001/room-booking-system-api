@@ -32,25 +32,55 @@ Route::get('/payment/cancel', function () {
     ]);
     });
 
-    // 🔐 Protected route
-    // customer route protected by auth and customer middleware
-    Route::middleware(['auth:sanctum', 'role:customer'])->prefix('customer')->group(function () {
-        // Space Modrations
+    // 🔐 Protected route // Customer
+
+    Route::middleware(['auth:sanctum', 'role:customer'])
+    ->prefix('customer')
+    ->group(function () {
+
+        // Spaces
         Route::get('spaces', [SpaceController::class, 'index']);
         Route::get('spaces/{id}', [SpaceController::class, 'show']);
         Route::get('spaces/{id}/availability', [SpaceController::class, 'availability']);
         Route::get('spaces/{id}/slots', [BookingController::class, 'slots']);
-        Route::post('bookings', [BookingController::class, 'store']);
-        Route::post('/payments/checkout', [PaymentController::class, 'checkout']);
 
-        // 📋 My bookings
-        Route::get('my-bookings', [BookingController::class, 'myBookings']);
-        // ❌ Cancel booking
-        Route::delete('bookings/{id}/cancel', [BookingController::class, 'cancelBooking']);
+        // Bookings
+        Route::post('bookings', [BookingController::class, 'store']);
+        Route::get('bookings', [BookingController::class, 'myBookings']);
+
+        // 🔥 Booking Details
+        Route::get('bookings/{id}', [BookingController::class, 'show']);
+
+        // 🔥 Booking Status
+        Route::get('bookings/{id}/status', [BookingController::class, 'status']);
+
         Route::put('bookings/{id}', [BookingController::class, 'update']);
-        // notification
+        Route::patch('bookings/{id}/cancel', [BookingController::class, 'cancelBooking']);
+
+        // Payments
+        Route::post('payments/checkout', [PaymentController::class, 'checkout']);
+
+        // Notifications
         Route::get('notifications', [UserController::class, 'notifications']);
     });
+    // // customer route protected by auth and customer middleware
+    // Route::middleware(['auth:sanctum', 'role:customer'])->prefix('customer')->group(function () {
+    //     // Space Modrations
+    //     Route::get('spaces', [SpaceController::class, 'index']);
+    //     Route::get('spaces/{id}', [SpaceController::class, 'show']);
+    //     Route::get('spaces/{id}/availability', [SpaceController::class, 'availability']);
+    //     Route::get('spaces/{id}/slots', [BookingController::class, 'slots']);
+    //     Route::post('bookings', [BookingController::class, 'store']);
+    //     Route::post('/payments/checkout', [PaymentController::class, 'checkout']);
+
+    //     // 📋 My bookings
+    //     Route::get('my-bookings', [BookingController::class, 'myBookings']);
+    //     // ❌ Cancel booking
+    //     Route::delete('bookings/{id}/cancel', [BookingController::class, 'cancelBooking']);
+    //     Route::put('bookings/{id}', [BookingController::class, 'update']);
+    //     // notification
+    //     Route::get('notifications', [UserController::class, 'notifications']);
+    // });
 
     // staff route protected by auth and staff middleware
     Route::middleware(['auth:sanctum', 'role:staff'])->prefix('staff')->group(function () {

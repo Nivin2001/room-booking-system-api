@@ -1,15 +1,22 @@
 <?php
+
 namespace App\Http\Controllers\Api\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Services\BookingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Space;
 use App\Services\AvailabilityService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Foundation\Validation\ValidatesRequests;
 
 class BookingController extends Controller
 {
+
+    use AuthorizesRequests, ValidatesRequests;
+
     public function __construct(
         protected BookingService $service,
         protected AvailabilityService $availabilityService
@@ -26,22 +33,22 @@ class BookingController extends Controller
             'slot' => 'required'
         ]);
 
-       $slots = $this->availabilityService->getSlots(
-    $request->space_id,
-    $request->date
-);
+        $slots = $this->availabilityService->getSlots(
+            $request->space_id,
+            $request->date
+        );
 
-$selectedSlot = collect($slots)->firstWhere('time', $request->slot);
+        $selectedSlot = collect($slots)->firstWhere('time', $request->slot);
 
-if (!$selectedSlot || !$selectedSlot['available']) {
-    return response()->json([
-        'success' => false,
-        'message' => 'Selected slot is not available'
-    ], 422);
-}
+        if (!$selectedSlot || !$selectedSlot['available']) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Selected slot is not available'
+            ], 422);
+        }
 
-$start = $selectedSlot['start'];
-$end = $selectedSlot['end'];
+        $start = $selectedSlot['start'];
+        $end = $selectedSlot['end'];
 
         $booking = $this->service->createBooking(
             Auth::user(),
@@ -120,12 +127,16 @@ $end = $selectedSlot['end'];
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
         ]);
+          $booking = Booking::findOrFail($id);
 
         $booking = $this->service->updateBooking(
             Auth::user(),
             $id,
             $validated
         );
+         // 🔐 Authorization
+        $this->authorize('update', $booking);
+
 
         return response()->json([
             'success' => true,
@@ -138,11 +149,29 @@ $end = $selectedSlot['end'];
      */
     public function cancelBooking($id)
     {
-        $booking = $this->service->cancelBooking(Auth::user(), $id);
+          $booking = Booking::findOrFail($id);
+
+    // 🔐 Authorization
+    $this->authorize('cancel', $booking);
+      $booking = $this->service->cancelBooking(Auth::user(), $id);
+
 
         return response()->json([
             'success' => true,
             'data' => $booking
+        ]);
+    }
+    public function status($id)
+    {
+        $booking = Booking::with('payment')
+            ->where('user_id', auth()->id())
+            ->findOrFail($id);
+
+        return response()->json([
+            'success' => true,
+            'booking_id' => $booking->id,
+            'booking_status' => $booking->status,
+            'payment_status' => $booking->payment?->status,
         ]);
     }
 }

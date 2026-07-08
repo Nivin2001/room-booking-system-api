@@ -6,9 +6,7 @@ use App\Events\BookingApproved;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Events\BookingCreated;
 use App\Events\BookingRejected;
-use App\Listeners\SendBookingApprovedNotification;
-use App\Listeners\SendBookingNotification;
-use App\Listeners\SendBookingRejectedNotification;
+
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -20,12 +18,13 @@ class EventServiceProvider extends ServiceProvider
     \App\Events\BookingCreated::class => [
         \App\Listeners\SendBookingCreatedEmail::class,
     ],
-       BookingApproved::class => [
-      SendBookingApprovedNotification::class,
-    ],
-      BookingRejected::class => [
-        SendBookingRejectedNotification::class,
-    ],
+    \App\Events\BookingApproved::class => [
+    \App\Listeners\SendBookingApprovedEmail::class,
+],
+
+\App\Events\BookingRejected::class => [
+    \App\Listeners\SendBookingRejectedEmail::class,
+],
     ];
 
     public function boot(): void

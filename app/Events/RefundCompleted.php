@@ -3,6 +3,7 @@
 namespace App\Events;
 
 use App\Models\Booking;
+use App\Models\Payment;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
@@ -19,14 +20,10 @@ class RefundCompleted
     /**
      * Create a new event instance.
      */
-      public Refund $refund;
-    public Booking $booking;
-
-    public function __construct(Refund $refund, Booking $booking)
-    {
-        $this->refund = $refund;
-        $this->booking = $booking;
-    }
+  public function __construct(
+        public Payment $payment,
+        public Booking $booking
+    ) {}
 
     /**
      * Get the channels the event should broadcast on.
