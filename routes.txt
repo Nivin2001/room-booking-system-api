@@ -1,0 +1,56 @@
+
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37m/[39m[38;2;108;114;128m ............................................... routes/web.php:5[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/admin/bookings[39m[38;2;108;114;128m .......... Api\Admin\BookingController@index[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/admin/categories[39m[38;2;108;114;128m ....... Api\Admin\CategoryController@index[39m
+  [33mPOST[39m      [37mapi/v1/admin/categories[39m[38;2;108;114;128m ....... Api\Admin\CategoryController@store[39m
+  [33mPUT[39m       [37mapi/v1/admin/categories/[39m[33m{id}[39m[38;2;108;114;128m . Api\Admin\CategoryController@update[39m
+  [31mDELETE[39m    [37mapi/v1/admin/categories/[39m[33m{id}[39m[38;2;108;114;128m Api\Admin\CategoryController@destroy[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/admin/dashboard[39m[38;2;108;114;128m ....... Api\Admin\DashboardController@index[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/admin/reports/summary[39m[38;2;108;114;128m .. Api\Admin\ReportController@summary[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/admin/users[39m[38;2;108;114;128m ................ API\Admin\UserController@index[39m
+  [31mDELETE[39m    [37mapi/v1/admin/users/[39m[33m{id}[39m[38;2;108;114;128m ......... API\Admin\UserController@destroy[39m
+  [33mPATCH[39m     [37mapi/v1/admin/users/[39m[33m{id}[39m[37m/role[39m[38;2;108;114;128m . API\Admin\UserController@changeRole[39m
+  [33mPOST[39m      [37mapi/v1/customer/bookings[39m[38;2;108;114;128m .... Api\Customer\BookingController@store[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/customer/bookings[39m[38;2;108;114;128m Api\Customer\BookingController@myBookings[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/customer/bookings/[39m[33m{id}[39m[38;2;108;114;128m Api\Customer\BookingController@show[39m
+  [33mPUT[39m       [37mapi/v1/customer/bookings/[39m[33m{id}[39m[38;2;108;114;128m Api\Customer\BookingController@upda…[39m
+  [33mPATCH[39m     [37mapi/v1/customer/bookings/[39m[33m{id}[39m[37m/cancel[39m[38;2;108;114;128m Api\Customer\BookingControll…[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/customer/bookings/[39m[33m{id}[39m[37m/status[39m[38;2;108;114;128m Api\Customer\BookingControll…[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/customer/notifications[39m[38;2;108;114;128m API\Admin\UserController@notificati…[39m
+  [33mPOST[39m      [37mapi/v1/customer/notifications/read-all[39m[38;2;108;114;128m API\Admin\UserController@m…[39m
+  [33mPOST[39m      [37mapi/v1/customer/notifications/[39m[33m{notification}[39m[37m/read[39m[38;2;108;114;128m API\Admin\UserC…[39m
+  [33mPOST[39m      [37mapi/v1/customer/payments/checkout[39m[38;2;108;114;128m Api\Customer\PaymentController@…[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/customer/spaces[39m[38;2;108;114;128m ........... Api\Staff\SpaceController@index[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/customer/spaces/[39m[33m{id}[39m[38;2;108;114;128m ....... Api\Staff\SpaceController@show[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/customer/spaces/[39m[33m{id}[39m[37m/availability[39m[38;2;108;114;128m Api\Staff\SpaceControlle…[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/customer/spaces/[39m[33m{id}[39m[37m/slots[39m[38;2;108;114;128m Api\Customer\BookingController@…[39m
+  [33mPOST[39m      [37mapi/v1/login[39m[38;2;108;114;128m ............................ API\AuthController@login[39m
+  [33mPOST[39m      [37mapi/v1/logout[39m[38;2;108;114;128m .......................... API\AuthController@logout[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/media/[39m[33m{id}[39m[37m/download[39m[38;2;108;114;128m Api\Staff\SpaceController@downloadImage[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/payment/cancel[39m[38;2;108;114;128m .......................... routes/api.php:31[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/payment/success[39m[38;2;108;114;128m ......................... routes/api.php:25[39m
+  [33mPOST[39m      [37mapi/v1/register[39m[38;2;108;114;128m ...................... API\AuthController@register[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/staff/bookings[39m[38;2;108;114;128m .......... Api\Staff\BookingController@index[39m
+  [33mPATCH[39m     [37mapi/v1/staff/bookings/[39m[33m{id}[39m[37m/approve[39m[38;2;108;114;128m Api\Staff\BookingController@ap…[39m
+  [33mPATCH[39m     [37mapi/v1/staff/bookings/[39m[33m{id}[39m[37m/reject[39m[38;2;108;114;128m Api\Staff\BookingController@rej…[39m
+  [31mDELETE[39m    [37mapi/v1/staff/media/[39m[33m{id}[39m[38;2;108;114;128m .... Api\Staff\SpaceController@deleteImage[39m
+  [33mPOST[39m      [37mapi/v1/staff/media/[39m[33m{id}[39m[37m/set-main[39m[38;2;108;114;128m Api\Staff\SpaceController@setMai…[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/staff/spaces[39m[38;2;108;114;128m .............. Api\Staff\SpaceController@index[39m
+  [33mPOST[39m      [37mapi/v1/staff/spaces[39m[38;2;108;114;128m .............. Api\Staff\SpaceController@store[39m
+  [33mPUT[39m       [37mapi/v1/staff/spaces/[39m[33m{id}[39m[38;2;108;114;128m ........ Api\Staff\SpaceController@update[39m
+  [31mDELETE[39m    [37mapi/v1/staff/spaces/[39m[33m{id}[39m[38;2;108;114;128m ....... Api\Staff\SpaceController@destroy[39m
+  [33mPOST[39m      [37mapi/v1/staff/spaces/[39m[33m{id}[39m[37m/categories[39m[38;2;108;114;128m Api\Staff\SpaceController@syn…[39m
+  [33mPOST[39m      [37mapi/v1/staff/spaces/[39m[33m{space}[39m[37m/upload-image[39m[38;2;108;114;128m Api\Staff\SpaceControlle…[39m
+  [33mPOST[39m      [37mapi/v1/staff/spaces/[39m[33m{space}[39m[37m/upload-images[39m[38;2;108;114;128m Api\Staff\SpaceControll…[39m
+  [33mPOST[39m      [37mapi/v1/stripe/webhook[39m[38;2;108;114;128m ......... Api\StripeWebhookController@handle[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mapi/v1/test-mail[39m[38;2;108;114;128m ............ Api\Admin\BookingController@testMail[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mdocs[39m[38;2;108;114;128m ...................................................... scribe[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mdocs.openapi[39m[38;2;108;114;128m scribe.openapi › vendor/knuckleswtf/scribe/routes/la…[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mdocs.postman[39m[38;2;108;114;128m scribe.postman › vendor/knuckleswtf/scribe/routes/la…[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37msanctum/csrf-cookie[39m[38;2;108;114;128m sanctum.csrf-cookie › Laravel\Sanctum › CsrfC…[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mstorage/[39m[33m{path}[39m[38;2;108;114;128m storage.local › vendor/laravel/framework/src/Illum…[39m
+  [33mPUT[39m       [37mstorage/[39m[33m{path}[39m[38;2;108;114;128m storage.local.upload › vendor/laravel/framework/sr…[39m
+  [34mGET[39m[38;2;108;114;128m|[39m[38;2;108;114;128mHEAD[39m  [37mup[39m[38;2;108;114;128m vendor/laravel/framework/src/Illuminate/Foundation/Configurati…[39m
+
+                                                           [34;1mShowing [52] routes[39;22m
+

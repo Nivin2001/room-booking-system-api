@@ -1,0 +1,2063 @@
+{
+  "info": {
+    "_postman_id": "2cb15ae2-4b65-4221-9450-e4c87d5aa642",
+    "name": "Booking-System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "21597393",
+    "_collection_link": "https://go.postman.co/collection/51347166-2cb15ae2-4b65-4221-9450-e4c87d5aa642?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Room-Booking-API",
+      "item": [
+        {
+          "name": "Authentication",
+          "item": [
+            {
+              "name": "Register",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n//   \"name\": \"Customer\",\r\n//   \"email\": \"Customer@test.com\",\r\n//   \"password\": \"123456\"\r\n\r\n  \"name\": \"Admin\",\r\n  \"email\": \"Admin@test.com\",\r\n  \"password\": \"123456\"\r\n\r\n//   \"name\":\"staffA\",\r\n//     \"email\": \"Staffs@test.com\",\r\n//    \"password\": \"123456\"\r\n\r\n//  \"name\": \"Nevin\",\r\n//   \"email\": \"nivin20012001@gmail.com\",\r\n//   \"password\": \"123456\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://127.0.0.1:8000/api/v1/register",
+                  "protocol": "http",
+                  "host": [
+                    "127",
+                    "0",
+                    "0",
+                    "1"
+                  ],
+                  "port": "8000",
+                  "path": [
+                    "api",
+                    "v1",
+                    "register"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n//  \"email\": \"nevin@test.com\",\r\n//   \"password\": \"123456\"\r\n \r\n//   \"email\": \"Staff@test.com\",\r\n//    \"password\": \"123456\"\r\n\r\n//        \"email\": \"Staffs@test.com\",\r\n//    \"password\": \"123456\"\r\n\r\n//   \"email\": \"Admin@test.com\",\r\n//   \"password\": \"123456\"\r\n\r\n//   \"email\": \"Customer@test.com\",\r\n//   \"password\": \"123456\"\r\n \"email\": \"nivin20012001@gmail.com\",\r\n  \"password\": \"123456\"\r\n\r\n\r\n//    \"email\": \"Staffs@test.com\",\r\n//    \"password\": \"123456\"\r\n}\r\n",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{url}}/login",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Test Email",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{url}}/test-mail",
+                  "host": [
+                    "{{url}}"
+                  ],
+                  "path": [
+                    "test-mail"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Customer",
+          "item": [
+            {
+              "name": "Spaces",
+              "item": [
+                {
+                  "name": "Get  Spaces",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "39|drRA3q7x3AFKOlSNdncib5Ft0kpJ2LQAW4T3OfTt4f325044",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/customer/spaces",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "spaces"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Show Spaces",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "39|drRA3q7x3AFKOlSNdncib5Ft0kpJ2LQAW4T3OfTt4f325044",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/customer/spaces/1",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "spaces",
+                        "1"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Check availability",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "39|drRA3q7x3AFKOlSNdncib5Ft0kpJ2LQAW4T3OfTt4f325044",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/customer/spaces/1/availability?date=2026-06-11",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "spaces",
+                        "1",
+                        "availability"
+                      ],
+                      "query": [
+                        {
+                          "key": "date",
+                          "value": "2026-06-11"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Slot",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "38|gmxG4HoIIeqTlBORroMYhmpwcoHU0ifMjOPofd91c7d06d74",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "// {\r\n//   \"space_id\": 2,\r\n//   \"start_time\": \"2026-04-15 10:00:00\",\r\n//   \"end_time\": \"2026-04-15 12:00:00\"\r\n// }\r\n\r\n{\r\n  \"space_id\": 1,\r\n  \"start_time\": \"2026-04-15 10:00:00\",\r\n  \"end_time\": \"2026-04-15 12:00:00\"\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/customer/spaces/1/slots?date=2026-06-11",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "spaces",
+                        "1",
+                        "slots"
+                      ],
+                      "query": [
+                        {
+                          "key": "date",
+                          "value": "2026-06-11"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Filters Space",
+              "item": [
+                {
+                  "name": "Search By Name",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "26|APq7vTLLKKIrs066ZFxF1mWxv1BQvgsd9BuScUx6c95e8ada",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Disposition",
+                        "value": "attachment",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/customer/spaces?search=Nice",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "spaces"
+                      ],
+                      "query": [
+                        {
+                          "key": "search",
+                          "value": "Nice"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Search by price",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "9|kFWmUvmSonmv4k6I0lT5ULby4Vrphj5xjizL3rt4b17f9f36",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/customer/spaces/?min_price=10&max_price=100",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "spaces",
+                        ""
+                      ],
+                      "query": [
+                        {
+                          "key": "min_price",
+                          "value": "10"
+                        },
+                        {
+                          "key": "max_price",
+                          "value": "100"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Search By Capcity",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "9|kFWmUvmSonmv4k6I0lT5ULby4Vrphj5xjizL3rt4b17f9f36",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/customer/spaces?capacity=5",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "spaces"
+                      ],
+                      "query": [
+                        {
+                          "key": "capacity",
+                          "value": "5"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Search By catgory",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "9|kFWmUvmSonmv4k6I0lT5ULby4Vrphj5xjizL3rt4b17f9f36",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/customer/spaces?category_id=2",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "spaces"
+                      ],
+                      "query": [
+                        {
+                          "key": "category_id",
+                          "value": "2"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Sorting",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "9|kFWmUvmSonmv4k6I0lT5ULby4Vrphj5xjizL3rt4b17f9f36",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/customer/spaces?sort=price_desc",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "spaces"
+                      ],
+                      "query": [
+                        {
+                          "key": "sort",
+                          "value": "price_desc"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Combained Search",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "9|kFWmUvmSonmv4k6I0lT5ULby4Vrphj5xjizL3rt4b17f9f36",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/customer/spaces?search=room&min_price=10&capacity=5&sort=price_asc",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "spaces"
+                      ],
+                      "query": [
+                        {
+                          "key": "search",
+                          "value": "room"
+                        },
+                        {
+                          "key": "min_price",
+                          "value": "10"
+                        },
+                        {
+                          "key": "capacity",
+                          "value": "5"
+                        },
+                        {
+                          "key": "sort",
+                          "value": "price_asc"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Booking",
+              "item": [
+                {
+                  "name": "Book a space",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"space_id\": 1,\r\n  \"date\": \"2026-09-23\",\r\n  \"slot\": \"13:00\"\r\n}\r\n"
+                    },
+                    "url": {
+                      "raw": "{{url}}/customer/bookings",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "bookings"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "MY BOOKINGS",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "26|ttzIlb4mnRDUXLas5u7wzzTN1pQH7olXNdU7O68O6e9319e3",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"space_id\": 2,\r\n  \"start_time\": \"2026-04-15 10:00:00\",\r\n  \"end_time\": \"2026-04-15 12:00:00\"\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/customer/bookings",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "bookings"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Cancel Booking",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "28|B6tK370Zo153V3BC6BAT8gHT5BcPgelavxSpktTGc7d21018",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/customer/bookings/9/cancel",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "bookings",
+                        "9",
+                        "cancel"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "update booking",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "39|drRA3q7x3AFKOlSNdncib5Ft0kpJ2LQAW4T3OfTt4f325044",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "//    {\r\n\r\n//   \"start_time\": \"2026-06-11 22:00:00\",\r\n//   \"end_time\": \"2026-06-11 23:00:00\"\r\n// }\r\n// {\r\n//   \"start_time\": \"2026-06-16 14:00:00\",\r\n//   \"end_time\": \"2026-06-16 16:00:00\"\r\n// }\r\n{\r\n  \"start_time\": \"2026-06-15 10:00:00\",\r\n  \"end_time\": \"2026-06-15 11:00:00\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/customer/bookings/27",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "bookings",
+                        "27"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Booking Status",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n//  \"email\": \"nevin@test.com\",\r\n//   \"password\": \"123456\"\r\n \r\n//   \"email\": \"Staff@test.com\",\r\n//    \"password\": \"123456\"\r\n\r\n//        \"email\": \"Staffs@test.com\",\r\n//    \"password\": \"123456\"\r\n\r\n//   \"email\": \"Admin@test.com\",\r\n//   \"password\": \"123456\"\r\n\r\n//   \"email\": \"Customer@test.com\",\r\n//   \"password\": \"123456\"\r\n \"email\": \"nivin20012001@gmail.com\",\r\n  \"password\": \"123456\"\r\n\r\n\r\n//    \"email\": \"Staffs@test.com\",\r\n//    \"password\": \"123456\"\r\n}\r\n"
+                    },
+                    "url": {
+                      "raw": "{{url}}/",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Notification",
+              "item": [
+                {
+                  "name": "Get Notification",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "40|k1b9W8ibDl3WjICrjK3gWYGH57eVa363dlmlqTgr8df92199",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "// {\r\n//   \"space_id\": 2,\r\n//   \"start_time\": \"2026-04-15 10:00:00\",\r\n//   \"end_time\": \"2026-04-15 12:00:00\"\r\n// }\r\n\r\n{\r\n  \"space_id\": 1,\r\n  \"start_time\": \"2026-04-15 10:00:00\",\r\n  \"end_time\": \"2026-04-15 12:00:00\"\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/customer/notifications",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "notifications"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Mark notification  as read",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "40|k1b9W8ibDl3WjICrjK3gWYGH57eVa363dlmlqTgr8df92199",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/customer/notifications/{{notification}}/read",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "notifications",
+                        "{{notification}}",
+                        "read"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Mark all notification",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "40|k1b9W8ibDl3WjICrjK3gWYGH57eVa363dlmlqTgr8df92199",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/customer/notifications/read-all?=&=",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "notifications",
+                        "read-all"
+                      ],
+                      "query": [
+                        {
+                          "key": "",
+                          "value": ""
+                        },
+                        {
+                          "key": "",
+                          "value": ""
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Payment",
+              "item": [
+                {
+                  "name": "Check out Stripe",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"booking_id\":19\r\n  \r\n  \r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/customer/payments/checkout",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "customer",
+                        "payments",
+                        "checkout"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "stripe webhook",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "25|sWU99llFUQCRU3R1CIlTVyD5p8WhEVh908ftBgfy7c8ced50",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"id\": \"evt_3TpPtgDPldStIlHC1etULlVx\",\r\n  \"type\": \"charge.refunded\",\r\n  \"data\": {\r\n    \"object\": {\r\n      \"id\": \"ch_test_123\",\r\n      \"payment_intent\": \"pi_test_123\"\r\n    }\r\n  }\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/stripe/webhook",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "stripe",
+                        "webhook"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Admin",
+          "item": [
+            {
+              "name": "Category",
+              "item": [
+                {
+                  "name": "Add catgory",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "7|3U9RXCeRHFCHMI6HU7b3VpscD950m5SFalGU3Pzz9b71fe02",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"name\": \"Hosting Room\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/admin/categories",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Categories",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "6|q19IlZNhpt8KRsNJAODFilfnLtq3gEQ6ocLm1H4l0770d44f",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"name\": \"Meeting Room\"\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/admin/categories",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "update categories",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "7|bG0mYgIUSQSZxYRtRhJT6Lv3Mf0I0I0etiDNyByoaf269e26",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"name\": \"Meetings Room\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/admin/categories/1",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories",
+                        "1"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete Category",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "7|bG0mYgIUSQSZxYRtRhJT6Lv3Mf0I0I0etiDNyByoaf269e26",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/admin/categories/1",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "categories",
+                        "1"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "User",
+              "item": [
+                {
+                  "name": "Get Users",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "18|RxJqu0fKG0zj9Fvrb1bC63tbbVdOtyIVrMQWvQy75e240acc",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/admin/users",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "users"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Change Role",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "18|RxJqu0fKG0zj9Fvrb1bC63tbbVdOtyIVrMQWvQy75e240acc",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"role\": \"staff\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/admin/users/2/role",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "users",
+                        "2",
+                        "role"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete User",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "18|RxJqu0fKG0zj9Fvrb1bC63tbbVdOtyIVrMQWvQy75e240acc",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/admin/users/2",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "users",
+                        "2"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Manage Booking",
+              "item": [
+                {
+                  "name": "View Booking",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "18|RxJqu0fKG0zj9Fvrb1bC63tbbVdOtyIVrMQWvQy75e240acc",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/admin/bookings?status=pending",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "bookings"
+                      ],
+                      "query": [
+                        {
+                          "key": "status",
+                          "value": "pending"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Report",
+              "item": [
+                {
+                  "name": "Dashboard Admin",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "31|wLUrnYXz7zhVzyP6VLgDCapqZIJ9aQoTGWvnlqvm7a865bf1",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/admin/dashboard",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "dashboard"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Get Report",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "31|wLUrnYXz7zhVzyP6VLgDCapqZIJ9aQoTGWvnlqvm7a865bf1",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/admin/reports/summary",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "reports",
+                        "summary"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Staff",
+          "item": [
+            {
+              "name": "Spaces",
+              "item": [
+                {
+                  "name": "Get Spaces",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "5|F5ZGeRE4xz0PYHz45z1yRki5K793LZUDGFEIUj0Bdfd89851",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": ""
+                    },
+                    "url": {
+                      "raw": "{{url}}/staff/spaces",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "staff",
+                        "spaces"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Add Spaces",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "7|3U9RXCeRHFCHMI6HU7b3VpscD950m5SFalGU3Pzz9b71fe02",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"title\": \"Room A\",\r\n  \"description\": \"Meeting room\",\r\n  \"location\": \"Gaza\",\r\n  \"price_per_hour\": 50,\r\n  \"capacity\": 10,\r\n  \"status\": \"available\",\r\n  \"categories\": [2]\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/staff/spaces",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "staff",
+                        "spaces"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "update space",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "43|MGbrOTkr3FsNsTDVGvMPWgZhHBZ66NXKiP15lxlWd1953966",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"title\": \"Room A Updated\",\r\n  \"description\": \"Updated room\",\r\n  \"location\": \"Nablus\",\r\n  \"price_per_hour\": 60,\r\n  \"capacity\": 15,\r\n  \"status\": \"available\",\r\n  \"categories\": [2]\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/staff/spaces/1",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "staff",
+                        "spaces",
+                        "1"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete Spaces",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/staff/spaces/1",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "staff",
+                        "spaces",
+                        "1"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Sync Catgory with Space",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "5|F5ZGeRE4xz0PYHz45z1yRki5K793LZUDGFEIUj0Bdfd89851",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"categories\": [ 2]\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{url}}/staff/spaces/2/categories",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "staff",
+                        "spaces",
+                        "2",
+                        "categories"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Booking",
+              "item": [
+                {
+                  "name": "View Booking",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "61|v7LHkJnF3A20lvzznYQClKu1k0axWQ1EuJ6EhyfV678cb2d9",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/staff/bookings",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "staff",
+                        "bookings"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Approve Booking",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "36|hTNjcQl6VamFeibcuwxctAeZbpQSuyXh3OwI0dKlc400abc2",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/staff/bookings/18/approve",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "staff",
+                        "bookings",
+                        "18",
+                        "approve"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Reject Booking",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "PATCH",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{url}}/staff/bookings/16/reject",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "staff",
+                        "bookings",
+                        "16",
+                        "reject"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "Imagge",
+              "item": [
+                {
+                  "name": "upload image",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "6|GHrVr2jh6iWsVpkNKzLssFxKrNdykEyEJsklNZpA4df7abe9",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "image",
+                          "type": "file",
+                          "uuid": "9c22b85c-057a-42c9-9c1a-52e4fac1e260",
+                          "src": [
+                            "postman-cloud:///1f0d41e5-8602-4a10-8c8a-2e81f9b8f9bc",
+                            "postman-cloud:///1f0ce938-b990-40e0-b001-1dc79f497ac8"
+                          ]
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{url}}/staff/spaces/1/upload-image",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "staff",
+                        "spaces",
+                        "1",
+                        "upload-image"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Download Image",
+                  "request": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Disposition",
+                        "value": "attachment",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/media/1/download",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "media",
+                        "1",
+                        "download"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Upload Multiple Image",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": []
+                    },
+                    "url": {
+                      "raw": "{{url}}/staff/spaces/1/upload-images",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "staff",
+                        "spaces",
+                        "1",
+                        "upload-images"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Delete  Image",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "15|9za1hO5fzWronouOgijrm6BkGD0BBKYtsFq8Cirm35ca99f8",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{url}}/staff/media/1",
+                      "host": [
+                        "{{url}}"
+                      ],
+                      "path": [
+                        "staff",
+                        "media",
+                        "1"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

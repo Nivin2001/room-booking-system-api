@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\BookingCancelled;
 use App\Mail\BookingCancelledMail;
+use App\Notifications\BookingCancelledNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use SendGrid\Mail\Mail;
@@ -21,9 +22,14 @@ class SendBookingCancelledEmail implements ShouldQueue
     /**
      * Handle the event.
      */
+        public $tries = 3;
+
+    public $backoff = 5;
+
     public function handle(BookingCancelled $event)
     {
-        Mail::to($event->booking->user->email)
-            ->send(new BookingCancelledMail($event->booking));
+         $event->booking->user->notify(
+        new BookingCancelledNotification($event->booking)
+    );
     }
 }

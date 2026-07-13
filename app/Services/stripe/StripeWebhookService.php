@@ -5,13 +5,13 @@ namespace App\Services\Stripe;
 use App\Enums\BookingStatus;
 use App\Events\PaymentFailed;
 use App\Events\PaymentSucceeded;
-use App\Events\RefundCompleted;
 use App\Models\Payment;
 use App\Models\Booking;
 use App\Models\PaymentTransaction;
 use App\Models\WebhookLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Stripe\Webhook;
 
 class StripeWebhookService
@@ -40,6 +40,8 @@ class StripeWebhookService
                 'provider' => 'stripe',
                 'event_type' => $event->type,
                 'payload' => json_decode($payload, true) ?: [],
+                'attempts' => 0,
+                'last_error' => null,
             ]
         );
 
@@ -50,24 +52,35 @@ class StripeWebhookService
             ]);
         }
 
-        $response = match ($event->type) {
+        try {
+            $response = match ($event->type) {
+                'checkout.session.completed' => $this->handleCheckoutCompleted($event),
+                'payment_intent.payment_failed' => $this->handlePaymentFailed($event),
+                'charge.refunded' => $this->handleRefund($event),
+                default => response()->json(['message' => 'Event ignored']),
+            };
 
-            'checkout.session.completed' => $this->handleCheckoutCompleted($event),
+                if ($response->getStatusCode() < 400) {
+                    // clear attempts on success
+                    $webhookLog->update([
+                        'processed_at' => now(),
+                        'last_error' => null,
+                        'attempts' => 0,
+                    ]);
+                }
 
-            'payment_intent.payment_failed' => $this->handlePaymentFailed($event),
-
-            'charge.refunded' => $this->handleRefund($event),
-
-            default => response()->json(['message' => 'Event ignored']),
-        };
-
-        if ($response->getStatusCode() < 400) {
-            $webhookLog->update([
-                'processed_at' => now(),
+            return $response;
+        } catch (\Throwable $e) {
+            Log::error('Webhook processing error', [
+                'event_id' => $event->id,
+                'error' => $e->getMessage(),
             ]);
-        }
 
-        return $response;
+            $webhookLog->increment('attempts');
+            $webhookLog->update(['last_error' => substr($e->getMessage(), 0, 1000)]);
+
+            return response()->json(['error' => 'processing_failed'], 500);
+        }
     }
 
     // 🟢 PAYMENT SUCCESS
@@ -79,7 +92,7 @@ class StripeWebhookService
         $bookingId = $session->metadata->booking_id;
 
         $payment = Payment::find($paymentId);
-        $booking = Booking::find($bookingId);
+        $booking = Booking::with('payment')->find($bookingId);
 
         if (!$payment || !$booking) {
             return response()->json(['error' => 'Not found'], 404);
@@ -191,7 +204,6 @@ class StripeWebhookService
         ], 400);
     }
 
-    // 🟢 1. منع التكرار (Idempotency key)
     $alreadyProcessed = PaymentTransaction::where('type', 'refund')
         ->where('meta->stripe_refund_id', $refundId)
         ->exists();
@@ -204,7 +216,6 @@ class StripeWebhookService
         ]);
     }
 
-    // 🟢 2. جلب الدفع
     $payment = Payment::where('payment_intent_id', $paymentIntentId)->first();
 
     if (!$payment) {
@@ -213,11 +224,11 @@ class StripeWebhookService
             'message' => 'Payment not found'
         ]);
     }
+
     $payment->update([
-        'status' => 'refunded',
+        'status' => \App\Enums\PaymentStatus::Refunded,
     ]);
 
-    // 🟢 4. تسجيل transaction (منع التكرار هنا كمان)
     PaymentTransaction::create([
         'payment_id' => $payment->id,
         'type' => 'refund',
@@ -230,14 +241,14 @@ class StripeWebhookService
         ],
     ]);
 
-    // 🟢 5. تحديث الحجز (مع حماية null)
     if ($payment->booking) {
         $payment->booking->update([
-            'status' => \App\Enums\BookingStatus::Rejected,
+            'status' => $payment->booking->status === \App\Enums\BookingStatus::Rejected
+                ? \App\Enums\BookingStatus::Rejected
+                : \App\Enums\BookingStatus::Cancelled,
         ]);
     }
 
-    // 🟢 6. Event (اختياري)
     event(new \App\Events\RefundCompleted(
         $payment,
         $payment->booking

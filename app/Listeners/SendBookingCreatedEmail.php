@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\BookingCreated;
 use App\Mail\BookingCreatedMail;
 use App\Models\Booking;
+use App\Notifications\BookingCreatedNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
@@ -29,10 +30,12 @@ class SendBookingCreatedEmail implements ShouldQueue
 
     public $backoff = 5; // ⏱️ ينتظر 5 ثواني بين كل محاولة
 
-    public function handle(BookingCreated $event)
-    {
-        Mail::to($event->booking->user->email)
-            ->send(new BookingCreatedMail($event->booking));
-
-    }
+    public function handle(BookingCreated $event): void
+{
+    $event->booking->user->notify(
+        new BookingCreatedNotification(
+            $event->booking
+        )
+    );
+}
 }

@@ -4,12 +4,14 @@ use App\Http\Controllers\Api\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\Api\Admin\CategoryController;
 use App\Http\Controllers\Api\Admin\DashboardController;
+use App\Http\Controllers\Api\Admin\ReportController;
 use App\Http\Controllers\API\Admin\UserController;
 use App\Http\Controllers\Api\Customer\BookingController;
 use App\Http\Controllers\Api\Customer\PaymentController;
 use App\Http\Controllers\Api\Staff\BookingController as StaffBookingController;
 use App\Http\Controllers\Api\Staff\SpaceController;
 use App\Http\Controllers\Api\StripeWebhookController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // public route
@@ -21,66 +23,57 @@ Route::prefix('v1')->group(function () {
     Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle']);
     Route::get('/payment/success', function (Request $request) {
-    return response()->json([
-        'message' => 'Payment completed successfully. Please wait confirmation.'
-    ]);
-});
+        return response()->json([
+            'message' => 'Payment completed successfully. Please wait confirmation.'
+        ]);
+    });
 
-Route::get('/payment/cancel', function () {
-    return response()->json([
-        'message' => 'Payment cancelled.'
-    ]);
+    Route::get('/payment/cancel', function () {
+        return response()->json([
+            'message' => 'Payment cancelled.'
+        ]);
     });
 
     // 🔐 Protected route // Customer
 
     Route::middleware(['auth:sanctum', 'role:customer'])
-    ->prefix('customer')
-    ->group(function () {
+        ->prefix('customer')
+        ->group(function () {
 
-        // Spaces
-        Route::get('spaces', [SpaceController::class, 'index']);
-        Route::get('spaces/{id}', [SpaceController::class, 'show']);
-        Route::get('spaces/{id}/availability', [SpaceController::class, 'availability']);
-        Route::get('spaces/{id}/slots', [BookingController::class, 'slots']);
+            // Spaces
+            Route::get('spaces', [SpaceController::class, 'index']);
+            Route::get('spaces/{id}', [SpaceController::class, 'show']);
+            Route::get('spaces/{id}/availability', [SpaceController::class, 'availability']);
+            Route::get('spaces/{id}/slots', [BookingController::class, 'slots']);
 
-        // Bookings
-        Route::post('bookings', [BookingController::class, 'store']);
-        Route::get('bookings', [BookingController::class, 'myBookings']);
+            // Bookings
+            Route::post('bookings', [BookingController::class, 'store']);
+            Route::get('bookings', [BookingController::class, 'myBookings']);
 
-        // 🔥 Booking Details
-        Route::get('bookings/{id}', [BookingController::class, 'show']);
+            // 🔥 Booking Details
+            Route::get('bookings/{id}', [BookingController::class, 'show']);
 
-        // 🔥 Booking Status
-        Route::get('bookings/{id}/status', [BookingController::class, 'status']);
+            // 🔥 Booking Status
+            Route::get('bookings/{id}/status', [BookingController::class, 'status']);
 
-        Route::put('bookings/{id}', [BookingController::class, 'update']);
-        Route::patch('bookings/{id}/cancel', [BookingController::class, 'cancelBooking']);
+            Route::put('bookings/{id}', [BookingController::class, 'update']);
+            Route::patch('bookings/{id}/cancel', [BookingController::class, 'cancelBooking']);
 
-        // Payments
-        Route::post('payments/checkout', [PaymentController::class, 'checkout']);
+            // Payments
+            Route::post('payments/checkout', [PaymentController::class, 'checkout']);
 
-        // Notifications
-        Route::get('notifications', [UserController::class, 'notifications']);
-    });
-    // // customer route protected by auth and customer middleware
-    // Route::middleware(['auth:sanctum', 'role:customer'])->prefix('customer')->group(function () {
-    //     // Space Modrations
-    //     Route::get('spaces', [SpaceController::class, 'index']);
-    //     Route::get('spaces/{id}', [SpaceController::class, 'show']);
-    //     Route::get('spaces/{id}/availability', [SpaceController::class, 'availability']);
-    //     Route::get('spaces/{id}/slots', [BookingController::class, 'slots']);
-    //     Route::post('bookings', [BookingController::class, 'store']);
-    //     Route::post('/payments/checkout', [PaymentController::class, 'checkout']);
+            // Notifications
+            Route::get('notifications', [UserController::class, 'notifications']);
+            Route::post(
+                'notifications/{notification}/read',
+                [UserController::class, 'markNotificationAsRead']
+            );
 
-    //     // 📋 My bookings
-    //     Route::get('my-bookings', [BookingController::class, 'myBookings']);
-    //     // ❌ Cancel booking
-    //     Route::delete('bookings/{id}/cancel', [BookingController::class, 'cancelBooking']);
-    //     Route::put('bookings/{id}', [BookingController::class, 'update']);
-    //     // notification
-    //     Route::get('notifications', [UserController::class, 'notifications']);
-    // });
+            Route::post(
+                'notifications/read-all',
+                [UserController::class, 'markAllNotificationsAsRead']
+            );
+        });
 
     // staff route protected by auth and staff middleware
     Route::middleware(['auth:sanctum', 'role:staff'])->prefix('staff')->group(function () {
@@ -122,5 +115,6 @@ Route::get('/payment/cancel', function () {
         Route::get('bookings', [AdminBookingController::class, 'index']);
 
         Route::get('dashboard', [DashboardController::class, 'index']);
+        Route::get('/reports/summary', [ReportController::class, 'summary']);
     });
 });

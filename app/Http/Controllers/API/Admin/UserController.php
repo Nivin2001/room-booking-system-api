@@ -26,6 +26,9 @@ class UserController extends Controller
             'role' => 'required|in:admin,staff,customer'
         ]);
 
+        // only admin may change roles
+        $this->authorize('admin');
+
         $user = User::findOrFail($id);
 
         $user->update([
@@ -41,10 +44,14 @@ class UserController extends Controller
     // ❌ Delete user
     public function destroy($id)
     {
+        // only admin can delete users
+        $this->authorize('admin');
+
         $user = User::findOrFail($id);
         if ($user->role === 'admin') {
-    return response()->json(['message' => 'Cannot delete admin'], 403);
-}
+            return response()->json(['message' => 'Cannot delete admin'], 403);
+        }
+
         $user->delete();
 
         return response()->json([
@@ -53,9 +60,34 @@ class UserController extends Controller
     }
 
     public function notifications()
-{
-    return response()->json([
-        'data' => auth()->user()->notifications
-    ]);
-}
+    {
+        return response()->json([
+            'data' => auth()->user()->notifications,
+        ]);
+    }
+
+    public function markNotificationAsRead(Request $request, string $notificationId)
+    {
+        $notification = $request->user()
+            ->notifications()
+            ->where('id', $notificationId)
+            ->firstOrFail();
+
+        $notification->markAsRead();
+
+        return response()->json([
+            'message' => 'Notification marked as read.',
+        ]);
+    }
+
+    public function markAllNotificationsAsRead(Request $request)
+    {
+        $request->user()
+            ->unreadNotifications
+            ->markAsRead();
+
+        return response()->json([
+            'message' => 'All notifications marked as read.',
+        ]);
+    }
 }

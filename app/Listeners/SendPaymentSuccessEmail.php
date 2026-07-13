@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\PaymentSucceeded;
 use App\Mail\PaymentSuccessMail;
+use App\Notifications\PaymentSucceededNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
@@ -21,13 +22,17 @@ class SendPaymentSuccessEmail implements ShouldQueue
     /**
      * Handle the event.
      */
+        public $tries = 3;
+
+    public $backoff = 5;
+
       public function handle(PaymentSucceeded $event): void
     {
-        Mail::to($event->booking->user->email)
-            ->send(new PaymentSuccessMail(
-                $event->booking,
-                $event->payment
-            ));
+           $event->booking->user->notify(
+        new PaymentSucceededNotification(
+            $event->booking,
+            $event->payment
+        ));
     }
 }
 

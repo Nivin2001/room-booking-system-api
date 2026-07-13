@@ -9,6 +9,7 @@ use App\Events\BookingApproved;
 use App\Events\BookingRejected;
 use App\Services\Stripe\StripeRefundService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class BookingApprovalService
 {
@@ -18,7 +19,12 @@ class BookingApprovalService
 
     public function approve($bookingId): Booking
     {
-        $booking = Booking::findOrFail($bookingId);
+        $booking = Booking::with('space')->findOrFail($bookingId);
+
+        // Authorization via policy
+        if (!Auth::user()->can('approve', $booking)) {
+            throw new \Exception('Not authorized to approve this booking');
+        }
 
         if ($booking->status !== BookingStatus::PendingStaffApproval) {
             throw new \Exception('Booking is not awaiting approval');
@@ -28,7 +34,7 @@ class BookingApprovalService
             $booking,
             BookingStatus::Confirmed,
             [
-                'approved_by' => auth()->id(),
+                'approved_by' => Auth::id(),
                 'approved_at' => now(),
             ]
         );
@@ -42,7 +48,12 @@ class BookingApprovalService
     {
         return DB::transaction(function () use ($bookingId) {
 
-            $booking = Booking::with('payment')->findOrFail($bookingId);
+            $booking = Booking::with('payment','space')->findOrFail($bookingId);
+
+            // Authorization via policy
+            if (!Auth::user()->can('approve', $booking)) {
+                throw new \Exception('Not authorized to reject this booking');
+            }
 
             if ($booking->status !== BookingStatus::PendingStaffApproval) {
                 throw new \Exception('Booking is not awaiting approval');

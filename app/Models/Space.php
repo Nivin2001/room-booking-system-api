@@ -17,6 +17,8 @@ class Space extends Model implements HasMedia
         'price_per_hour',
         'capacity',
         'status',
+        'opening_hour',
+        'closing_hour',
         'created_by',
     ];
       public function registerMediaCollections(): void

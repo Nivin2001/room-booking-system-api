@@ -13,11 +13,15 @@ class WebhookLog extends Model
         'event_type',
         'payload',
         'processed_at',
+        'attempts',
+        'last_error',
     ];
 
     protected $casts = [
         'payload' => 'array',
         'processed_at' => 'datetime',
+        'attempts' => 'integer',
+        'last_error' => 'string',
     ];
 
 }

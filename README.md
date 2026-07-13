@@ -1,203 +1,157 @@
-<<<<<<< ours
-
 # Room Booking System API
 
-A Room Booking API system that supports three main actors: Customer, Staff, and Admin.
+A Laravel backend API for managing room and space reservations inside facilities such as coworking spaces, event venues, educational institutions, and hospitality properties.
 
-## 🚀 Features
-- Authentication using Laravel Sanctum
-- Booking system with conflict prevention using database transactions
-- Event-driven architecture (Events & Listeners)
-- Queue system for background processing
-- Notification system (Mail & Database)
+## Overview
 
-## 🛠️ Tech Stack
-- Laravel
-- MySQL
-- Queue (Database)
-- Sanctum Authentication
+This API supports three main roles:
 
-## 🎯 Architecture
-- Controller → Service Layer → Event → Listener → Queue → Notification
+- **Customers**: browse available spaces, book time slots, pay, and manage reservations.
+- **Staff**: manage spaces, review bookings, approve or reject reservations, and upload media.
+- **Admins**: manage categories, users, view bookings, and monitor revenue.
 
-## 📌 Goal
-Build a scalable and high-performance booking system using clean architecture principles.
-=======
-# Room Booking System API
+## Key Features
 
-Room Booking System API is a Laravel backend application for reserving and managing rooms or spaces inside a facility. It is designed for use cases such as coworking spaces, educational institutions, event venues, hospitality businesses, and internal facility management.
+- Authentication with Laravel Sanctum
+- Role-based access control for customers, staff, and admins
+- Space and category management
+- Availability checks and hourly booking slots
+- Stripe payment checkout and webhook processing
+- Booking approval/rejection workflow
+- Event-driven notifications and email messaging
+- Media upload via Spatie Media Library
+- Queue-ready background processing
 
-The system supports three main stakeholders:
-
-- Administrators: manage users, categories, bookings, and analytics.
-- Staff: manage spaces, review bookings, approve or reject reservations, and maintain room information.
-- Customers: browse available spaces, create bookings, pay for reservations, and manage their own bookings.
-
-## Project Status
-
-This project currently implements the core backend workflow for authentication, role-based access, spaces, bookings, payments, media uploads, notifications, and basic analytics.
-
-Current maturity: backend API in active development. The main business modules are present, but production hardening is still needed around tests, authorization consistency, payment/refund edge cases, webhook idempotency, and concurrency-safe booking.
-
-## Implemented Features
-
-### Authentication and Access Control
-
-- Customer registration and login.
-- Token-based authentication using Laravel Sanctum.
-- Logout by deleting user tokens.
-- Role middleware for `customer`, `staff`, and `admin`.
-- Initial policy classes for spaces and bookings.
-
-### Space and Room Management
-
-- Staff can create, update, delete, and list spaces.
-- Spaces include title, description, location, hourly price, capacity, status, and creator.
-- Spaces can be linked to categories through a many-to-many relationship.
-- Search and filtering by keyword, price, capacity, category, and sorting.
-- Image upload support using Spatie Media Library.
-- Multiple images, image deletion, image download, and setting a main image.
-
-### Booking Management
-
-- Customers can view spaces and available slots.
-- Customers can create bookings for available slots.
-- Customers can view their own bookings.
-- Customers can update pending bookings.
-- Customers can cancel bookings when allowed by business rules.
-- Staff can view bookings and approve or reject bookings.
-- Booking lifecycle uses status values such as:
-  - `pending_payment`
-  - `payment_failed`
-  - `pending_staff_approval`
-  - `confirmed`
-  - `rejected`
-  - `cancelled`
-  - `expired`
-
-### Availability and Pricing
-
-- Availability service checks whether a space is free for a time range.
-- Slot generation currently creates hourly slots.
-- Pricing service calculates total booking amount from space hourly price and selected time range.
-
-### Payments
-
-- Stripe Checkout integration.
-- Internal payment records are created before redirecting to Stripe Checkout.
-- Stripe webhook verifies event signatures.
-- Payment success updates payment and booking status.
-- Payment failure and refund event handlers exist.
-- Payment transaction table exists for future ledger/history support.
-
-### Notifications and Background Processing
-
-- Event-driven structure using events and listeners.
-- Mail classes for booking and payment-related messages.
-- Notification classes for booking lifecycle updates.
-- Reminder command/job structure for upcoming bookings.
-- Queue configuration is available through Laravel.
-
-### Admin and Reporting
-
-- Admin can manage users and categories.
-- Admin can view bookings.
-- Basic dashboard statistics:
-  - total bookings
-  - bookings today
-  - total revenue
-  - top booked spaces
-
-## Partially Implemented or Needs Hardening
-
-- Real-time availability updates are not fully implemented yet. Current availability is API-based, not websocket-based.
-- SMS notifications are not implemented yet.
-- Reports are currently basic dashboard statistics, not full exportable reports.
-- Refund and dispute handling need a more complete payment lifecycle.
-- Webhook idempotency needs to be completed using webhook logs.
-- Double-booking prevention needs stronger concurrency handling.
-- Authorization should be checked before state-changing actions.
-- Feature tests are still minimal.
-- API documentation should be generated and maintained through Scribe or Postman.
-- Mobile responsiveness is mainly a frontend concern; this API is designed to support mobile and responsive clients.
-
-## Tech Stack
+## Requirements
 
 - PHP 8.2+
 - Laravel 12
-- Laravel Sanctum
 - MySQL
-- Stripe PHP SDK
-- Spatie Laravel Media Library
-- SendGrid package
-- Laravel Queues
-- PHPUnit
-- Scribe for API documentation
+- Composer
+- Node.js / npm (for Vite assets)
 
-## Architecture
+## Installation
 
-The project follows a layered backend style:
+1. Clone the repository:
+   ```bash
+   git clone <repo-url> room-booking-api
+   cd room-booking-api
+   ```
+2. Install PHP dependencies:
+   ```bash
+   composer install
+   ```
+3. Copy environment file:
+   ```bash
+   cp .env.example .env
+   ```
+4. Generate application key:
+   ```bash
+   php artisan key:generate
+   ```
+5. Configure database and mail settings in `.env`
+6. Run migrations:
+   ```bash
+   php artisan migrate
+   ```
+7. Install frontend dependencies (optional):
+   ```bash
+   npm install
+   ```
 
-```text
-Routes -> Controllers -> Services -> Models/Repositories -> Events -> Listeners -> Mail/Notifications/Queue
+## Usage
+
+Start the application locally:
+
+```bash
+php artisan serve
 ```
 
-Important application areas:
+Or use the dev script from `package.json`:
 
-- `routes/api.php`: API route definitions and role-protected route groups.
-- `app/Http/Controllers/API`: HTTP request handling by actor area.
-- `app/Services`: business logic for bookings, spaces, availability, pricing, dashboard, and Stripe.
-- `app/Models`: Eloquent models for users, spaces, categories, bookings, payments, webhook logs, and transactions.
-- `app/Events` and `app/Listeners`: event-driven booking and payment side effects.
-- `app/Mail` and `app/Notifications`: email and database notification support.
-- `database/migrations`: database schema.
+```bash
+npm run dev
+```
 
-## Main API Areas
+## Available Scripts
 
-All API routes are grouped under `/api/v1`.
+- `composer install` — install PHP dependencies
+- `php artisan migrate` — run database migrations
+- `php artisan test` — run automated tests
+- `npm install` — install frontend dependencies
+- `npm run dev` — run Vite development server
+- `npm run build` — build frontend assets
 
-### Public
+## Routes and API Structure
 
-- `POST /register`
-- `POST /login`
-- `POST /logout`
-- `POST /stripe/webhook`
-- `GET /payment/success`
-- `GET /payment/cancel`
+Routes are defined under `routes/api.php` and use versioning and role-based middleware.
 
-### Customer
+### Public Endpoints
 
-Protected by Sanctum authentication and `customer` role.
+- `POST /api/v1/register`
+- `POST /api/v1/login`
+- `POST /api/v1/logout`
+- `POST /api/v1/stripe/webhook`
+- `GET /api/v1/payment/success`
+- `GET /api/v1/payment/cancel`
 
-- `GET /customer/spaces`
-- `GET /customer/spaces/{id}`
-- `GET /customer/spaces/{id}/availability`
-- `GET /customer/spaces/{id}/slots`
-- `POST /customer/bookings`
-- `GET /customer/my-bookings`
-- `PUT /customer/bookings/{id}`
-- `DELETE /customer/bookings/{id}/cancel`
-- `POST /customer/payments/checkout`
-- `GET /customer/notifications`
+### Customer Endpoints
 
-### Staff
+Protected by Sanctum and `customer` role:
 
-Protected by Sanctum authentication and `staff` role.
+- `GET /api/v1/customer/spaces`
+- `GET /api/v1/customer/spaces/{id}`
+- `GET /api/v1/customer/spaces/{id}/availability`
+- `GET /api/v1/customer/spaces/{id}/slots`
+- `POST /api/v1/customer/bookings`
+- `GET /api/v1/customer/my-bookings`
+- `PUT /api/v1/customer/bookings/{id}`
+- `DELETE /api/v1/customer/bookings/{id}/cancel`
+- `POST /api/v1/customer/payments/checkout`
+- `GET /api/v1/customer/notifications`
 
-- `GET /staff/bookings`
-- `PATCH /staff/bookings/{id}/approve`
-- `PATCH /staff/bookings/{id}/reject`
-- `GET /staff/spaces`
-- `POST /staff/spaces`
-- `PUT /staff/spaces/{id}`
-- `DELETE /staff/spaces/{id}`
-- `POST /staff/spaces/{id}/categories`
-- `POST /staff/spaces/{space}/upload-image`
-- `POST /staff/spaces/{space}/upload-images`
-- `DELETE /staff/media/{id}`
-- `POST /staff/media/{id}/set-main`
+### Staff Endpoints
 
-### Admin
+Protected by Sanctum and `staff` role:
+
+- `GET /api/v1/staff/bookings`
+- `PATCH /api/v1/staff/bookings/{id}/approve`
+- `PATCH /api/v1/staff/bookings/{id}/reject`
+- `GET /api/v1/staff/spaces`
+- `POST /api/v1/staff/spaces`
+- `PUT /api/v1/staff/spaces/{id}`
+- `DELETE /api/v1/staff/spaces/{id}`
+- `POST /api/v1/staff/spaces/{id}/categories`
+- `POST /api/v1/staff/spaces/{space}/upload-image`
+- `POST /api/v1/staff/spaces/{space}/upload-images`
+- `DELETE /api/v1/staff/media/{id}`
+- `POST /api/v1/staff/media/{id}/set-main`
+
+### Admin Endpoints
+
+Admin routes are typically under `/api/v1/admin` and include user, category, and booking management.
+
+## Project Structure
+
+- `app/Http/Controllers` — API controllers and request handling
+- `app/Models` — Eloquent models
+- `app/Services` — business logic services
+- `app/Events` and `app/Listeners` — event-driven architecture
+- `app/Mail` and `app/Notifications` — email and notification handlers
+- `database/migrations` — database schema definitions
+- `routes/api.php` — API route definitions
+
+## Notes
+
+- Payment processing uses Stripe and requires valid Stripe credentials in `.env`
+- Media upload uses Spatie Media Library and requires filesystem configuration
+- Queue workers are recommended for processing email and event listeners
+- This README is intended to document the current backend API; frontend-specific assets are minimal and managed by Vite
+
+## License
+
+MIT
+
 
 Protected by Sanctum authentication and `admin` role.
 

@@ -2,17 +2,21 @@
 namespace App\Services;
 
 use App\Enums\BookingStatus;
+use App\Enums\PaymentStatus;
 use App\Events\BookingCreated;
 use App\Models\Booking;
+use App\Models\PaymentTransaction;
 use App\Services\AvailabilityService;
 use App\Services\PricingService;
+use App\Services\Stripe\StripeRefundService;
 use Illuminate\Support\Facades\DB;
 
 class BookingService
 {
     public function __construct(
         protected AvailabilityService $availabilityService,
-        protected PricingService $pricingService
+        protected PricingService $pricingService,
+        protected StripeRefundService $stripeRefundService
     ) {}
 
    public function createBooking($user, array $data): Booking
@@ -20,6 +24,9 @@ class BookingService
     $booking = DB::transaction(function () use ($user, $data) {
 
         // 1. Check availability
+        // Lock existing bookings for this space to avoid race conditions
+        Booking::where('space_id', $data['space_id'])->lockForUpdate()->get();
+
         $isAvailable = $this->availabilityService->isAvailable(
             $data['space_id'],
             $data['start_time'],
@@ -49,7 +56,6 @@ class BookingService
         ]);
     });
 
-    // 🔥 خارج الترانزاكشن (صح)
     DB::afterCommit(function () use ($booking) {
         event(new BookingCreated($booking));
     });
@@ -113,7 +119,6 @@ class BookingService
         throw new \Exception('Cannot update a cancelled booking');
     }
 
-    // not allow update if already confirmed, as the payment is done and the slot is reserved, if they want to change the time, they need to cancel and rebook or request reschedule
     if ($booking->status === BookingStatus::Confirmed) {
         throw new \Exception('Cannot update a confirmed booking. Please cancel and rebook or request reschedule');
     }
@@ -125,7 +130,8 @@ class BookingService
     $isAvailable = $this->availabilityService->isAvailable(
         $booking->space_id,
         $data['start_time'],
-        $data['end_time']
+        $data['end_time'],
+        $booking->id
     );
 
     if (!$isAvailable) {
@@ -154,14 +160,55 @@ public function cancelBooking($user, $id): Booking
     if (now()->greaterThan($booking->start_time)) {
         throw new \Exception('Cannot cancel past or ongoing booking');
     }
- // already paid but not started yet,allow refund process
+    // already paid but not started yet, allow refund process
     if ($booking->status === BookingStatus::Confirmed) {
-        throw new \Exception('Confirmed booking cannot be cancelled directly. Refund required');
+        $payment = $booking->payment;
+
+        if (! $payment) {
+            throw new \Exception('No payment record found for this confirmed booking');
+        }
+
+        if (! $payment->payment_intent_id) {
+            throw new \Exception('Payment intent is missing, refund cannot be processed');
+        }
+
+        // Perform refund via Stripe
+        $refund = $this->stripeRefundService->refund($payment);
+
+        // update payment record
+        $payment->update([
+            'status' => PaymentStatus::Refunded,
+        ]);
+
+        // record transaction
+        PaymentTransaction::create([
+            'payment_id' => $payment->id,
+            'type' => 'refund',
+            'amount' => $payment->amount,
+            'currency' => $payment->currency ?? 'usd',
+            'meta' => [
+                'stripe_refund_id' => $refund->id ?? null,
+            ],
+        ]);
+
+        BookingStatusService::changeStatus(
+            $booking,
+            BookingStatus::Cancelled,
+            [
+                'cancelled_at' => now(),
+            ]
+        );
+
+        return $booking->fresh();
     }
 
-    $booking->update([
-        'status' => BookingStatus::Cancelled
-    ]);
+    // $booking->update([
+    //     'status' => BookingStatus::Cancelled
+    // ]);
+    BookingStatusService::changeStatus(
+    $booking,
+    BookingStatus::Cancelled
+);
 
     return $booking->fresh();
 }

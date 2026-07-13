@@ -4,6 +4,7 @@ namespace App\Listeners;
 
 use App\Events\BookingRejected;
 use App\Mail\BookingRejectedMail;
+use App\Notifications\BookingRejectedNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Facades\Mail;
@@ -21,9 +22,17 @@ class SendBookingRejectedEmail implements ShouldQueue
     /**
      * Handle the event.
      */
+        public $tries = 3;
+
+    public $backoff = 5;
+
         public function handle(BookingRejected $event)
     {
-        Mail::to($event->booking->user->email)
-            ->send(new BookingRejectedMail($event->booking, $event->reason));
+        $event->booking->user->notify(
+        new BookingRejectedNotification(
+            $event->booking,
+            $event->reason
+        )
+    );
     }
 }
