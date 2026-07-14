@@ -2,276 +2,530 @@
 
 A Laravel backend API for managing room and space reservations in coworking spaces, venues, schools, and hospitality properties.
 
-## Overview
+The system provides secure booking management, role-based access control, online payments, notifications, reporting, and administrative features through a RESTful API architecture.
 
-The API supports three main roles:
+---
 
-- **Customers**: browse spaces, check availability, book slots, pay, and manage reservations.
-- **Staff**: manage spaces and categories, approve or reject bookings, upload media, and review reservations.
-- **Admins**: manage users, categories, bookings, and view dashboard analytics.
+# Overview
 
-## Key Features
+The API supports three main user roles:
 
-- Laravel 12 backend with clean service layer separation
-- Authentication and multi-role access control using Laravel Sanctum
-- Space, category, booking, and availability management
-- Stripe Checkout integration and webhook processing
-- Booking lifecycle states with staff approval flow
-- Event-driven notifications and email dispatch
-- Spatie Media Library for space image uploads
-- Queue-ready setup for async jobs and notifications
+- **Customers**
+  - Browse available spaces
+  - Check availability and time slots
+  - Create and manage reservations
+  - Complete online payments
+  - Receive notifications
 
-## Requirements
+- **Staff**
+  - Manage spaces
+  - Manage categories
+  - Upload and manage media
+  - Approve or reject booking requests
+  - Review reservations
+
+- **Admins**
+  - Manage users
+  - Manage categories
+  - Monitor bookings
+  - Access dashboard analytics
+  - Generate reports
+
+---
+
+# Key Features
+
+## Authentication & Authorization
+
+- Laravel 12 API backend
+- Laravel Sanctum authentication
+- Token-based authentication
+- Role-based access control
+
+Supported roles:
+
+
+Customer
+Staff
+Admin
+
+
+---
+
+## Space Management
+
+- Create and update spaces
+- Delete spaces
+- Assign categories
+- Upload images
+- Manage media using Spatie Media Library
+- Check space availability
+- Generate available booking slots
+
+---
+
+## Booking Management
+
+Customers can:
+
+- Create bookings
+- View their reservations
+- Update bookings
+- Cancel bookings
+- Track booking status
+
+
+## Booking Lifecycle
+
+
+Booking Created
+
+    ↓
+
+pending_payment
+
+    ↓
+
+Payment Successful
+
+    ↓
+
+pending_staff_approval
+
+    ↓
+
+confirmed
+
+    ↓
+
+completed / cancelled / rejected
+
+
+The system validates booking status transitions to prevent invalid workflow changes.
+
+---
+
+# Payment System
+
+Integrated with Stripe Checkout.
+
+Supported payment operations:
+
+- Create Stripe Checkout Session
+- Handle successful payments
+- Handle failed payments
+- Process refunds
+- Verify Stripe webhook signatures
+- Prevent duplicate webhook processing
+
+
+## Payment Lifecycle
+
+
+pending
+
+↓
+
+paid
+
+↓
+
+refunded
+
+
+or:
+
+
+pending
+
+↓
+
+failed
+
+
+---
+
+# Notification System
+
+The system uses Laravel Notification architecture with database and email channels.
+
+Implemented notifications:
+
+- Booking Created
+- Booking Approved
+- Booking Rejected
+- Booking Cancelled
+- Payment Succeeded
+- Payment Failed
+- Refund Completed
+
+
+Notification flow:
+
+
+Event
+
+↓
+
+Listener
+
+↓
+
+Notification
+
+↓
+
+Email + Database
+
+
+Notifications are queue-ready for asynchronous processing.
+
+---
+
+# Reports & Dashboard
+
+Admin reporting features include:
+
+- Total bookings
+- Today's bookings
+- Revenue summary
+- Most booked spaces
+- Booking statistics
+- User management overview
+
+Available through:
+
+
+GET /api/v1/admin/dashboard
+
+
+---
+
+# Requirements
 
 - PHP 8.2+
 - Composer
 - MySQL or compatible database
-- Node.js and npm (for Vite asset tooling)
+- Node.js and npm (optional for Vite assets)
 - Stripe account for payment integration
 
-## Installation
+---
 
-1. Clone the repository:
-   ```bash
-   git clone <repo-url> room-booking-api
-   cd room-booking-api
-   ```
+# Installation
 
-2. Install PHP dependencies:
-   ```bash
-   composer install
-   ```
-
-3. Copy the environment template:
-   ```bash
-   cp .env.example .env
-   ```
-
-4. Generate the application key:
-   ```bash
-   php artisan key: generate
-   ```
-
-5. Configure `.env` values for database, mail, and Stripe.
-
-6. Run migrations:
-   ```bash
-   php artisan migrate
-   ```
-
-7. Install frontend dependencies (optional):
-   ```bash
-   npm install
-   ```
-
-## Local Development
-
-Start the Laravel development server:
+## 1. Clone Repository
 
 ```bash
+git clone https://github.com/Nivin2001/room-booking-system-api.git
+
+cd room-booking-system-api
+2. Install PHP Dependencies
+composer install
+3. Environment Configuration
+
+Create .env file:
+
+cp .env.example .env
+
+Generate application key:
+
+php artisan key:generate
+
+Configure:
+
+Database
+Mail
+Queue
+Stripe credentials
+4. Database Setup
+
+Run migrations:
+
+php artisan migrate --seed
+
+Create storage link:
+
+php artisan storage:link
+5. Run Application
+
+Start Laravel server:
+
 php artisan serve --host=127.0.0.1 --port=8000
-```
+Queue Processing
 
-If you want the Vite dev server too:
+Run queue worker for background jobs:
 
-```bash
-npm run dev
-```
+php artisan queue:work
 
-## Testing
+Used for:
 
-Run the automated test suite:
+Email notifications
+Background processing
+Async tasks
+Scheduler
 
-```bash
+Run Laravel scheduler:
+
+php artisan schedule:work
+
+Used for:
+
+Booking expiration
+Scheduled tasks
+Testing
+
+Run all tests:
+
+php artisan test
+
+or:
+
 vendor/bin/phpunit
-```
 
-Run a single test file or filter:
+Run specific test:
 
-```bash
-vendor/bin/phpunit --filter DashboardTest
-```
+php artisan test --filter DashboardTest
 
-## Useful Composer Scripts
+Test coverage includes:
 
-- `composer install` — install PHP dependencies
-- `php artisan migrate` — run database migrations
-- `php artisan test` — run PHPUnit tests via Laravel wrapper
-- `npm install` — install frontend dependencies
-- `npm run dev` — start Vite development mode
-- `npm run build` — build production assets
-- `npm run setup` — install dependencies, generate key, migrate, and build assets
+Authentication
+Authorization
+Booking creation
+Booking cancellation
+Booking status lifecycle
+Payments
+Refunds
+Notifications
+Dashboard
+Webhooks
+API Documentation
 
-## API Routes
+The API documentation is generated using Scribe.
 
-The API routes are registered in `routes/api.php` and use versioning under `/api/v1`.
+After generating documentation:
 
-### Public Routes
+php artisan scribe:generate
 
-- `POST /api/v1/register`
-- `POST /api/v1/login`
-- `POST /api/v1/logout`
-- `POST /api/v1/stripe/webhook`
-- `GET /api/v1/payment/success`
-- `GET /api/v1/payment/cancel`
+Access:
 
-### Customer Routes
+http://127.0.0.1:8000/docs
 
-Protected by Sanctum and customer role middleware.
+Documentation includes:
 
-- `GET /api/v1/customer/spaces`
-- `GET /api/v1/customer/spaces/{id}`
-- `GET /api/v1/customer/spaces/{id}/availability`
-- `GET /api/v1/customer/spaces/{id}/slots`
-- `POST /api/v1/customer/bookings`
-- `GET /api/v1/customer/my-bookings`
-- `PUT /api/v1/customer/bookings/{id}`
-- `DELETE /api/v1/customer/bookings/{id}/cancel`
-- `POST /api/v1/customer/payments/checkout`
-- `GET /api/v1/customer/notifications`
+API endpoints
+Request parameters
+Response examples
+Authentication information
+Postman Collection
+OpenAPI specification
+API Routes
 
-### Staff Routes
+All API routes are versioned under:
 
-Protected by Sanctum and staff role middleware.
+/api/v1
+Public Routes
+POST /api/v1/register
 
-- `GET /api/v1/staff/bookings`
-- `PATCH /api/v1/staff/bookings/{id}/approve`
-- `PATCH /api/v1/staff/bookings/{id}/reject`
-- `GET /api/v1/staff/spaces`
-- `POST /api/v1/staff/spaces`
-- `PUT /api/v1/staff/spaces/{id}`
-- `DELETE /api/v1/staff/spaces/{id}`
-- `POST /api/v1/staff/spaces/{id}/categories`
-- `POST /api/v1/staff/spaces/{space}/upload-image`
-- `POST /api/v1/staff/spaces/{space}/upload-images`
-- `DELETE /api/v1/staff/media/{id}`
-- `POST /api/v1/staff/media/{id}/set-main`
+POST /api/v1/login
 
-### Admin Routes
+POST /api/v1/stripe/webhook
 
-Protected by Sanctum and admin role.
+GET /api/v1/payment/success
 
-- `GET /api/v1/admin/dashboard`
-- `GET /api/v1/admin/bookings`
-- `GET /api/v1/admin/users`
-- `PATCH /api/v1/admin/users/{id}/role`
-- `DELETE /api/v1/admin/users/{id}`
-- `GET /api/v1/admin/categories`
-- `POST /api/v1/admin/categories`
-- `PUT /api/v1/admin/categories/{id}`
-- `DELETE /api/v1/admin/categories/{id}`
+GET /api/v1/payment/cancel
+Authenticated Routes
+POST /api/v1/logout
 
-## API Examples
+Requires:
 
-### Register a customer
+Authorization: Bearer {token}
+Customer Routes
 
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/register \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Nevin", "email": "Nevin@example.com", "password": "secret", "password_confirmation": "secret"}'
-```
+Protected by:
 
-### Customer login
+auth:sanctum
+role:customer
+Spaces
+GET    /api/v1/customer/spaces
 
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/login \
-  -H "Content-Type: application/json" \
-  -d '{"email": "Nevin@example.com", "password": "secret"}'
-```
+GET    /api/v1/customer/spaces/{id}
 
-### Create a Stripe checkout session
+GET    /api/v1/customer/spaces/{id}/availability
 
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/customer/payments/checkout \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token>" \
-  -d '{"booking_id":123}'
-```
+GET    /api/v1/customer/spaces/{id}/slots
+Bookings
+POST   /api/v1/customer/bookings
 
-### Create a booking request
+GET    /api/v1/customer/bookings
 
-```bash
-curl -X POST http://127.0.0.1:8000/api/v1/customer/bookings \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer <token>" \
-  -d '{"space_id":45, "start_time": "2026-07-20 10:00:00", "end_time": "2026-07-20 12:00:00", "guests":4, "notes": "Team meeting"}'
-```
+GET    /api/v1/customer/bookings/{id}
 
-### Access admin dashboard
+GET    /api/v1/customer/bookings/{id}/status
 
-```bash
-curl -X GET http://127.0.0.1:8000/api/v1/admin/dashboard \
-  -H "Authorization: Bearer <admin-token>."
-```
+PUT    /api/v1/customer/bookings/{id}
 
-## Booking Flow
+PATCH  /api/v1/customer/bookings/{id}/cancel
+Payments
+POST /api/v1/customer/payments/checkout
+Notifications
+GET  /api/v1/customer/notifications
 
-A typical booking lifecycle in the application:
+POST /api/v1/customer/notifications/{notification}/read
 
-1. Customer selects a space and time slot.
-2. Booking is created with `pending_payment` status.
-3. Customer pays with Stripe Checkout.
-4. Stripe webhook updates payment and booking status.
-5. Booking becomes `pending_staff_approval`.
-6. Staff approves or rejects the booking.
-7. Approved bookings move to `confirmed`.
-8. Rejected bookings may trigger refund processing.
+POST /api/v1/customer/notifications/read-all
+Staff Routes
 
-## Payment Flow
+Protected by:
 
-Stripe payment lifecycle covers:
+auth:sanctum
+role:staff
+Booking Approval
+GET   /api/v1/staff/bookings
 
-- `pending` -> `paid`
-- `pending` -> `failed`
-- `paid` -> `refunded`
+PATCH /api/v1/staff/bookings/{id}/approve
 
-The webhook service validates Stripe signatures and logs events to prevent duplicate processing.
+PATCH /api/v1/staff/bookings/{id}/reject
+Space Management
+GET    /api/v1/staff/spaces
 
-## Project Structure
+POST   /api/v1/staff/spaces
 
-- `app/Http/Controllers` — request handling and API controller logic
-- `app/Models` — Eloquent data models
-- `app/Services` — business logic and Stripe processing
-- `app/Events` / `app/Listeners` — event-driven workflows
-- `app/Mail` / `app/Notifications` — email and notification templates
-- `app/Policies` — authorization rules
-- `database/migrations` — schema definitions
-- `routes/api.php` — versioned API routing
-- `tests` — automated feature and unit tests
+PUT    /api/v1/staff/spaces/{id}
 
-## Notes
+DELETE /api/v1/staff/spaces/{id}
 
-- Stripe requires credentials in `.env` for `STRIPE_KEY`, `STRIPE_SECRET`, and webhook settings.
-- Media uploads are handled by Spatie Media Library and may require filesystem configuration.
-- Queue workers are recommended for email, notifications, and webhook processing.
-- The current project includes API-focused backend functionality; frontend assets are minimal.
+Media:
 
-## Environment Variables
+POST   /api/v1/staff/spaces/{space}/upload-image
 
-The project requires these main `.env` values.
+POST   /api/v1/staff/spaces/{space}/upload-images
 
-- `APP_NAME`
-- `APP_URL`
-- `DB_CONNECTION`
-- `DB_HOST`
-- `DB_PORT`
-- `DB_DATABASE`
-- `DB_USERNAME`
-- `DB_PASSWORD`
-- `QUEUE_CONNECTION`
-- `MAIL_MAILER`
-- `MAIL_HOST`
-- `MAIL_PORT`
-- `MAIL_USERNAME`
-- `MAIL_PASSWORD`
-- `MAIL_ENCRYPTION`
-- `MAIL_FROM_ADDRESS`
-- `MAIL_FROM_NAME`
-- `STRIPE_KEY`
-- `STRIPE_SECRET`
-- `STRIPE_WEBHOOK_SECRET`
+DELETE /api/v1/staff/media/{id}
 
-## License
+POST   /api/v1/staff/media/{id}/set-main
+Admin Routes
+
+Protected by:
+
+auth:sanctum
+role:admin
+Dashboard & Reports
+GET /api/v1/admin/dashboard
+
+GET /api/v1/admin/reports/summary
+Users
+GET    /api/v1/admin/users
+
+PATCH  /api/v1/admin/users/{id}/role
+
+DELETE /api/v1/admin/users/{id}
+Categories
+GET    /api/v1/admin/categories
+
+POST   /api/v1/admin/categories
+
+PUT    /api/v1/admin/categories/{id}
+
+DELETE /api/v1/admin/categories/{id}
+Project Architecture
+
+The project follows a layered backend architecture:
+
+Routes
+
+   ↓
+
+Controllers
+
+   ↓
+
+Services
+
+   ↓
+
+Models
+
+   ↓
+
+Database
+
+Event-driven components:
+
+Events
+
+↓
+
+Listeners
+
+↓
+
+Notifications
+
+↓
+
+Queue
+Project Structure
+app/
+ ├── Http/Controllers
+ ├── Models
+ ├── Services
+ ├── Events
+ ├── Listeners
+ ├── Notifications
+ ├── Policies
+
+database/
+ └── migrations
+
+routes/
+ └── api.php
+
+tests/
+ └── Feature
+Environment Variables
+
+Required environment variables:
+
+APP_NAME
+APP_URL
+
+DB_CONNECTION
+DB_HOST
+DB_PORT
+DB_DATABASE
+DB_USERNAME
+DB_PASSWORD
+
+QUEUE_CONNECTION
+
+MAIL_MAILER
+MAIL_HOST
+MAIL_PORT
+MAIL_USERNAME
+MAIL_PASSWORD
+
+STRIPE_KEY
+STRIPE_SECRET
+STRIPE_WEBHOOK_SECRET
+Future Improvements
+
+Possible enhancements:
+
+Increase automated test coverage
+Add Redis caching
+Add real-time notifications using WebSockets
+Add CI/CD pipeline
+Docker deployment
+Advanced analytics dashboard
+License
 
 MIT
 
+Author
+Nevin Shabat
+
+Laravel Backend Developer
+
+Nivin Shabat
+
+Laravel Backend Developer
