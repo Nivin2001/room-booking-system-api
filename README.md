@@ -1,34 +1,33 @@
 # Room Booking System API
 
-A Laravel backend API for managing room and space reservations inside facilities such as coworking spaces, event venues, educational institutions, and hospitality properties.
+A Laravel backend API for managing room and space reservations in coworking spaces, venues, schools, and hospitality properties.
 
 ## Overview
 
-This API supports three main roles:
+The API supports three main roles:
 
-- **Customers**: browse available spaces, book time slots, pay, and manage reservations.
-- **Staff**: manage spaces, review bookings, approve or reject reservations, and upload media.
-- **Admins**: manage categories, users, view bookings, and monitor revenue.
+- **Customers**: browse spaces, check availability, book slots, pay, and manage reservations.
+- **Staff**: manage spaces and categories, approve or reject bookings, upload media, and review reservations.
+- **Admins**: manage users, categories, bookings, and view dashboard analytics.
 
 ## Key Features
 
-- Authentication with Laravel Sanctum
-- Role-based access control for customers, staff, and admins
-- Space and category management
-- Availability checks and hourly booking slots
-- Stripe payment checkout and webhook processing
-- Booking approval/rejection workflow
-- Event-driven notifications and email messaging
-- Media upload via Spatie Media Library
-- Queue-ready background processing
+- Laravel 12 backend with clean service layer separation
+- Authentication and multi-role access control using Laravel Sanctum
+- Space, category, booking, and availability management
+- Stripe Checkout integration and webhook processing
+- Booking lifecycle states with staff approval flow
+- Event-driven notifications and email dispatch
+- Spatie Media Library for space image uploads
+- Queue-ready setup for async jobs and notifications
 
 ## Requirements
 
 - PHP 8.2+
-- Laravel 12
-- MySQL
 - Composer
-- Node.js / npm (for Vite assets)
+- MySQL or compatible database
+- Node.js and npm (for Vite asset tooling)
+- Stripe account for payment integration
 
 ## Installation
 
@@ -37,56 +36,77 @@ This API supports three main roles:
    git clone <repo-url> room-booking-api
    cd room-booking-api
    ```
+
 2. Install PHP dependencies:
    ```bash
    composer install
    ```
-3. Copy environment file:
+
+3. Copy the environment template:
    ```bash
    cp .env.example .env
    ```
-4. Generate application key:
+
+4. Generate the application key:
    ```bash
-   php artisan key:generate
+   php artisan key: generate
    ```
-5. Configure database and mail settings in `.env`
+
+5. Configure `.env` values for database, mail, and Stripe.
+
 6. Run migrations:
    ```bash
    php artisan migrate
    ```
+
 7. Install frontend dependencies (optional):
    ```bash
    npm install
    ```
 
-## Usage
+## Local Development
 
-Start the application locally:
+Start the Laravel development server:
 
 ```bash
-php artisan serve
+php artisan serve --host=127.0.0.1 --port=8000
 ```
 
-Or use the dev script from `package.json`:
+If you want the Vite dev server too:
 
 ```bash
 npm run dev
 ```
 
-## Available Scripts
+## Testing
+
+Run the automated test suite:
+
+```bash
+vendor/bin/phpunit
+```
+
+Run a single test file or filter:
+
+```bash
+vendor/bin/phpunit --filter DashboardTest
+```
+
+## Useful Composer Scripts
 
 - `composer install` — install PHP dependencies
 - `php artisan migrate` — run database migrations
-- `php artisan test` — run automated tests
+- `php artisan test` — run PHPUnit tests via Laravel wrapper
 - `npm install` — install frontend dependencies
-- `npm run dev` — run Vite development server
-- `npm run build` — build frontend assets
+- `npm run dev` — start Vite development mode
+- `npm run build` — build production assets
+- `npm run setup` — install dependencies, generate key, migrate, and build assets
 
-## Routes and API Structure
+## API Routes
 
-Routes are defined under `routes/api.php` and use versioning and role-based middleware.
+The API routes are registered in `routes/api.php` and use versioning under `/api/v1`.
 
-### Public Endpoints
+### Public Routes
 
 - `POST /api/v1/register`
 - `POST /api/v1/login`
@@ -95,9 +115,9 @@ Routes are defined under `routes/api.php` and use versioning and role-based midd
 - `GET /api/v1/payment/success`
 - `GET /api/v1/payment/cancel`
 
-### Customer Endpoints
+### Customer Routes
 
-Protected by Sanctum and `customer` role:
+Protected by Sanctum and customer role middleware.
 
 - `GET /api/v1/customer/spaces`
 - `GET /api/v1/customer/spaces/{id}`
@@ -110,9 +130,9 @@ Protected by Sanctum and `customer` role:
 - `POST /api/v1/customer/payments/checkout`
 - `GET /api/v1/customer/notifications`
 
-### Staff Endpoints
+### Staff Routes
 
-Protected by Sanctum and `staff` role:
+Protected by Sanctum and staff role middleware.
 
 - `GET /api/v1/staff/bookings`
 - `PATCH /api/v1/staff/bookings/{id}/approve`
@@ -127,158 +147,131 @@ Protected by Sanctum and `staff` role:
 - `DELETE /api/v1/staff/media/{id}`
 - `POST /api/v1/staff/media/{id}/set-main`
 
-### Admin Endpoints
+### Admin Routes
 
-Admin routes are typically under `/api/v1/admin` and include user, category, and booking management.
+Protected by Sanctum and admin role.
+
+- `GET /api/v1/admin/dashboard`
+- `GET /api/v1/admin/bookings`
+- `GET /api/v1/admin/users`
+- `PATCH /api/v1/admin/users/{id}/role`
+- `DELETE /api/v1/admin/users/{id}`
+- `GET /api/v1/admin/categories`
+- `POST /api/v1/admin/categories`
+- `PUT /api/v1/admin/categories/{id}`
+- `DELETE /api/v1/admin/categories/{id}`
+
+## API Examples
+
+### Register a customer
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/register \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Nevin", "email": "Nevin@example.com", "password": "secret", "password_confirmation": "secret"}'
+```
+
+### Customer login
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "Nevin@example.com", "password": "secret"}'
+```
+
+### Create a Stripe checkout session
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/customer/payments/checkout \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
+  -d '{"booking_id":123}'
+```
+
+### Create a booking request
+
+```bash
+curl -X POST http://127.0.0.1:8000/api/v1/customer/bookings \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer <token>" \
+  -d '{"space_id":45, "start_time": "2026-07-20 10:00:00", "end_time": "2026-07-20 12:00:00", "guests":4, "notes": "Team meeting"}'
+```
+
+### Access admin dashboard
+
+```bash
+curl -X GET http://127.0.0.1:8000/api/v1/admin/dashboard \
+  -H "Authorization: Bearer <admin-token>."
+```
+
+## Booking Flow
+
+A typical booking lifecycle in the application:
+
+1. Customer selects a space and time slot.
+2. Booking is created with `pending_payment` status.
+3. Customer pays with Stripe Checkout.
+4. Stripe webhook updates payment and booking status.
+5. Booking becomes `pending_staff_approval`.
+6. Staff approves or rejects the booking.
+7. Approved bookings move to `confirmed`.
+8. Rejected bookings may trigger refund processing.
+
+## Payment Flow
+
+Stripe payment lifecycle covers:
+
+- `pending` -> `paid`
+- `pending` -> `failed`
+- `paid` -> `refunded`
+
+The webhook service validates Stripe signatures and logs events to prevent duplicate processing.
 
 ## Project Structure
 
-- `app/Http/Controllers` — API controllers and request handling
-- `app/Models` — Eloquent models
-- `app/Services` — business logic services
-- `app/Events` and `app/Listeners` — event-driven architecture
-- `app/Mail` and `app/Notifications` — email and notification handlers
-- `database/migrations` — database schema definitions
-- `routes/api.php` — API route definitions
+- `app/Http/Controllers` — request handling and API controller logic
+- `app/Models` — Eloquent data models
+- `app/Services` — business logic and Stripe processing
+- `app/Events` / `app/Listeners` — event-driven workflows
+- `app/Mail` / `app/Notifications` — email and notification templates
+- `app/Policies` — authorization rules
+- `database/migrations` — schema definitions
+- `routes/api.php` — versioned API routing
+- `tests` — automated feature and unit tests
 
 ## Notes
 
-- Payment processing uses Stripe and requires valid Stripe credentials in `.env`
-- Media upload uses Spatie Media Library and requires filesystem configuration
-- Queue workers are recommended for processing email and event listeners
-- This README is intended to document the current backend API; frontend-specific assets are minimal and managed by Vite
+- Stripe requires credentials in `.env` for `STRIPE_KEY`, `STRIPE_SECRET`, and webhook settings.
+- Media uploads are handled by Spatie Media Library and may require filesystem configuration.
+- Queue workers are recommended for email, notifications, and webhook processing.
+- The current project includes API-focused backend functionality; frontend assets are minimal.
 
-## License
+## Environment Variables
 
-MIT
+The project requires these main `.env` values.
 
-
-Protected by Sanctum authentication and `admin` role.
-
-- `GET /admin/users`
-- `PATCH /admin/users/{id}/role`
-- `DELETE /admin/users/{id}`
-- `GET /admin/categories`
-- `POST /admin/categories`
-- `PUT /admin/categories/{id}`
-- `DELETE /admin/categories/{id}`
-- `GET /admin/bookings`
-- `GET /admin/dashboard`
-
-## Booking Lifecycle
-
-The intended booking flow is:
-
-```text
-Customer selects slot
--> booking created as pending_payment
--> customer pays through Stripe Checkout
--> webhook marks payment as paid
--> booking becomes pending_staff_approval
--> staff approves or rejects
--> approved booking becomes confirmed
--> rejected booking triggers refund flow
-```
-
-Alternative flows:
-
-```text
-pending_payment -> payment_failed
-pending_payment -> expired
-pending_payment -> cancelled
-pending_staff_approval -> rejected -> refunded
-confirmed -> refund requested -> refunded/cancelled
-```
-
-## Payment Lifecycle
-
-The intended payment flow is:
-
-```text
-pending -> paid -> refunded
-pending -> failed
-paid -> partially_refunded
-paid -> disputed
-```
-
-Current Stripe support includes checkout session creation and webhook handlers for successful checkout, failed payment intent, and refunded charges.
-
-## Setup
-
-1. Install PHP dependencies:
-
-```bash
-composer install
-```
-
-2. Create environment file:
-
-```bash
-cp .env.example .env
-```
-
-3. Generate application key:
-
-```bash
-php artisan key:generate
-```
-
-4. Configure database, mail, queue, and Stripe values in `.env`.
-
-5. Run migrations:
-
-```bash
-php artisan migrate
-```
-
-6. Start the local server:
-
-```bash
-php artisan serve
-```
-
-7. Start the queue worker when testing queued notifications:
-
-```bash
-php artisan queue:work
-```
-
-## Important Environment Values
-
-The application depends on the usual Laravel environment values plus payment and mail settings.
-
-Common values:
-
+- `APP_NAME`
 - `APP_URL`
+- `DB_CONNECTION`
+- `DB_HOST`
+- `DB_PORT`
 - `DB_DATABASE`
 - `DB_USERNAME`
 - `DB_PASSWORD`
 - `QUEUE_CONNECTION`
 - `MAIL_MAILER`
+- `MAIL_HOST`
+- `MAIL_PORT`
+- `MAIL_USERNAME`
+- `MAIL_PASSWORD`
+- `MAIL_ENCRYPTION`
+- `MAIL_FROM_ADDRESS`
+- `MAIL_FROM_NAME`
+- `STRIPE_KEY`
 - `STRIPE_SECRET`
 - `STRIPE_WEBHOOK_SECRET`
 
-## Testing
+## License
 
-Run the test suite with:
+MIT
 
-```bash
-php artisan test
-```
-
-Current test coverage is minimal. The next development phase should add feature tests for authentication, authorization, booking availability, payment checkout, Stripe webhooks, approval/rejection, refunds, and dashboard calculations.
-
-## Next Development Phase
-
-The next phase should focus on production hardening before adding more features:
-
-1. Fix authorization order for staff booking approval/rejection.
-2. Strengthen booking lifecycle and status transitions.
-3. Fix and complete refund handling.
-4. Add webhook idempotency using webhook logs.
-5. Add feature tests for core business flows.
-6. Improve dashboard calculations and reporting.
-7. Generate API documentation using Scribe.
-
-See [docs/ROADMAP.md](docs/ROADMAP.md) for the detailed roadmap.
->>>>>>> theirs
