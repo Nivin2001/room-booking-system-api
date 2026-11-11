@@ -3,9 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Booking;
-use App\Notifications\BookingReminderNotification;
 use Illuminate\Console\Command;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Carbon;
 use App\Jobs\SendBookingReminderJob;
 
@@ -28,7 +26,7 @@ class SendBookingReminders extends Command
             ->get();
 
         foreach ($bookings as $booking) {
-            SendBookingReminderJob::dispatch($booking);
+            SendBookingReminderJob::dispatch((int) $booking->id);
         }
 
         $this->info('Reminders dispatched: ' . $bookings->count());

@@ -24,9 +24,13 @@ class RoleMiddleware
         }
 
         if (!in_array($user->role, $roles)) {
-            return response()->json([
-                'message' => 'Forbidden - insufficient role'
-            ], 403);
+            if ($request->expectsJson() || $request->is('api/*')) {
+                return response()->json([
+                    'message' => 'Forbidden - insufficient role'
+                ], 403);
+            }
+
+            return response()->view('errors.403', [], 403);
         }
 
         return $next($request);

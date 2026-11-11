@@ -20,6 +20,7 @@ class Space extends Model implements HasMedia
         'opening_hour',
         'closing_hour',
         'created_by',
+        'staff_id',
     ];
       public function registerMediaCollections(): void
     {
@@ -38,5 +39,10 @@ class Space extends Model implements HasMedia
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function responsibleStaff()
+    {
+        return $this->belongsTo(User::class, 'staff_id');
     }
 }

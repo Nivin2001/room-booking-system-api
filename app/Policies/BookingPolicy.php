@@ -1,6 +1,7 @@
 <?php
 namespace App\Policies;
 
+use App\Enums\BookingStatus;
 use App\Models\Booking;
 use App\Models\User;
 
@@ -15,7 +16,7 @@ class BookingPolicy
     {
         return $user->role === 'admin'
             || $booking->user_id === $user->id
-            || ($booking->space && $booking->space->created_by === $user->id);
+            || ($user->role === 'staff' && $booking->space && (int) $booking->space->staff_id === (int) $user->id);
     }
 
     public function create(User $user): bool
@@ -26,7 +27,10 @@ class BookingPolicy
     public function update(User $user, Booking $booking): bool
     {
         return $booking->user_id === $user->id
-            && in_array($booking->status, ['pending_payment', 'pending_staff_approval']);
+            && in_array($booking->status, [
+                BookingStatus::PendingPayment,
+                BookingStatus::PendingStaffApproval,
+            ], true);
     }
 
     public function delete(User $user, Booking $booking): bool
@@ -41,11 +45,11 @@ class BookingPolicy
 
     public function approve(User $user, Booking $booking): bool
     {
-        return $user->role === 'staff' && $booking->space && $booking->space->created_by === $user->id;
+        return $user->role === 'staff' && $booking->space && (int) $booking->space->staff_id === (int) $user->id;
     }
 
     public function reject(User $user, Booking $booking): bool
     {
-        return $user->role === 'staff' && $booking->space && $booking->space->created_by === $user->id;
+        return $user->role === 'staff' && $booking->space && (int) $booking->space->staff_id === (int) $user->id;
     }
 }

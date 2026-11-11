@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Staff;
+namespace App\Http\Controllers\API\Staff;
 
 use App\Http\Controllers\Controller;
 use App\Services\SpaceService;
@@ -23,13 +23,17 @@ class SpaceController extends Controller
 
     public function index(Request $request)
 {
-    $spaces = $this->service->list($request->all());
+    $spaces = $request->user()->role === 'staff'
+        ? $this->service->listForStaff($request->user(), $request->all())
+        : $this->service->list($request->all());
 
     return SpaceResource::collection($spaces);
 }
 
       public function store(Request $request)
 {
+    $this->authorize('create', Space::class);
+
     $request->validate([
         'title' => 'required|string',
         'description' => 'nullable|string',
@@ -42,7 +46,7 @@ class SpaceController extends Controller
     ]);
 
     // 📦 إنشاء space عبر service
-    $space = $this->service->create($request->all());
+    $space = $this->service->create($request->all(), $request->user());
 
     // 🔗 ربط categories (many-to-many)
     $space->categories()->sync($request->categories);
@@ -68,9 +72,13 @@ class SpaceController extends Controller
     /**
      * 🔍 Show single space
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
-        $space = $this->service->getSpaceDetails($id);
+        $query = Space::query()->whereKey($id);
+        if ($request->user()?->role === 'staff') {
+            $query->where('staff_id', $request->user()->id);
+        }
+        $space = $query->firstOrFail();
 
         return new SpaceResource($space);
     }
@@ -80,7 +88,15 @@ class SpaceController extends Controller
      */
  public function availability($spaceId, Request $request)
 {
-    $space = Space::find($spaceId);
+    $validated = $request->validate([
+        'date' => ['nullable', 'date_format:Y-m-d'],
+    ]);
+
+    $query = Space::query()->whereKey($spaceId);
+    if ($request->user()?->role === 'staff') {
+        $query->where('staff_id', $request->user()->id);
+    }
+    $space = $query->first();
 
     if (!$space) {
         return response()->json([
@@ -89,7 +105,7 @@ class SpaceController extends Controller
         ], 404);
     }
 
-    $date = $request->date ?? now()->toDateString();
+    $date = $validated['date'] ?? now()->toDateString();
 
     $availability = $this->service->getAvailability($space, $date);
 
@@ -101,6 +117,8 @@ class SpaceController extends Controller
 
 public function update(Request $request, Space $space)
 {
+    $this->authorize('update', $space);
+
     $request->validate([
         'title' => 'required|string',
         'description' => 'nullable|string',
@@ -112,10 +130,7 @@ public function update(Request $request, Space $space)
         'categories.*' => 'exists:categories,id'
     ]);
 
-    // 🔐 policy check
-    $this->authorize('update', $space);
-
-    $space = $this->service->update($space->id, $request->validated());
+    $space = $this->service->update($space->id, $request->all(), $request->user());
 
     return new SpaceResource($space);
 }
@@ -136,12 +151,13 @@ public function destroy($id)
 
 public function syncCategories(Request $request, $id)
 {
+    $space = Space::findOrFail($id);
+    $this->authorize('update', $space);
+
     $request->validate([
         'categories' => 'required|array',
         'categories.*' => 'exists:categories,id'
     ]);
-
-    $space = Space::findOrFail($id);
 
     // 🔥 الربط
     $space->categories()->sync($request->categories);

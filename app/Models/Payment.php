@@ -35,5 +35,15 @@ public function transactions()
 {
     return $this->hasMany(PaymentTransaction::class);
 }
+
+public function checkoutAttempts()
+{
+    return $this->hasMany(CheckoutAttempt::class);
+}
+
+public function refundOperations()
+{
+    return $this->hasMany(RefundOperation::class);
+}
 }
 

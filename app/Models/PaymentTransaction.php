@@ -9,6 +9,7 @@ class PaymentTransaction extends Model
     //
       protected $fillable = [
         'payment_id',
+        'refund_operation_id',
         'type',
         'amount',
         'currency',
@@ -22,5 +23,10 @@ class PaymentTransaction extends Model
     public function payment()
 {
     return $this->belongsTo(Payment::class);
+}
+
+public function refundOperation()
+{
+    return $this->belongsTo(RefundOperation::class);
 }
 }

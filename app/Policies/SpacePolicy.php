@@ -14,22 +14,23 @@ class SpacePolicy
 
     public function view(User $user, Space $space): bool
     {
-        return $user->role === 'admin' || $space->created_by === $user->id;
+        return $user->role === 'admin'
+            || ($user->role === 'staff' && (int) $space->staff_id === (int) $user->id);
     }
 
     public function create(User $user): bool
     {
-        return in_array($user->role, ['admin', 'staff']);
+        return $user->role === 'admin';
     }
 
     public function update(User $user, Space $space): bool
     {
-        return $user->id === $space->created_by || $user->role === 'admin';
+        return $user->role === 'admin';
     }
 
     public function delete(User $user, Space $space): bool
     {
-        return $user->id === $space->created_by || $user->role === 'admin';
+        return $user->role === 'admin';
     }
 
     public function restore(User $user, Space $space): bool

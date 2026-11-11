@@ -58,4 +58,19 @@ public function approvedBookings()
 {
     return $this->hasMany(Booking::class, 'approved_by');
 }
+
+public function refundOperations()
+{
+    return $this->hasMany(RefundOperation::class, 'requested_by');
+}
+
+public function createdSpaces()
+{
+    return $this->hasMany(Space::class, 'created_by');
+}
+
+public function assignedSpaces()
+{
+    return $this->hasMany(Space::class, 'staff_id');
+}
 }

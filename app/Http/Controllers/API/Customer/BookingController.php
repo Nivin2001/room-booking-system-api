@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Api\Customer;
+namespace App\Http\Controllers\API\Customer;
 
 use App\Http\Controllers\Controller;
+use App\Enums\BookingStatus;
+use App\Enums\PaymentStatus;
 use App\Models\Booking;
 use App\Services\BookingService;
 use Illuminate\Http\Request;
@@ -11,6 +13,7 @@ use App\Models\Space;
 use App\Services\AvailabilityService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
 {
@@ -29,8 +32,8 @@ class BookingController extends Controller
     {
         $validated = $request->validate([
             'space_id' => 'required|exists:spaces,id',
-            'date' => 'required|date',
-            'slot' => 'required'
+            'date' => ['required', 'date_format:Y-m-d'],
+            'slot' => ['required', 'date_format:H:i'],
         ]);
 
         $slots = $this->availabilityService->getSlots(
@@ -50,14 +53,23 @@ class BookingController extends Controller
         $start = $selectedSlot['start'];
         $end = $selectedSlot['end'];
 
-        $booking = $this->service->createBooking(
-            Auth::user(),
-            [
-                'space_id' => $validated['space_id'],
-                'start_time' => $start,
-                'end_time' => $end,
-            ]
-        );
+        try {
+            $booking = $this->service->createBooking(
+                Auth::user(),
+                [
+                    'space_id' => $validated['space_id'],
+                    'start_time' => $start,
+                    'end_time' => $end,
+                ]
+            );
+        } catch (\DomainException $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => $exception->getMessage() === 'Space is not available'
+                    ? 'Selected slot is no longer available.'
+                    : 'Selected slot must be in the future and within operating hours.',
+            ], 422);
+        }
 
         return response()->json([
             'success' => true,
@@ -71,7 +83,7 @@ class BookingController extends Controller
     public function slots($id, Request $request)
     {
         $request->validate([
-            'date' => 'required|date'
+            'date' => ['required', 'date_format:Y-m-d'],
         ]);
 
         $space = Space::findOrFail($id);
@@ -101,9 +113,12 @@ class BookingController extends Controller
      */
     public function show($id)
     {
+        $booking = Booking::findOrFail($id);
+        $this->authorize('view', $booking);
+
         return response()->json([
             'success' => true,
-            'data' => $this->service->getBooking($id)
+            'data' => $this->service->getBooking($booking->id)
         ]);
     }
 
@@ -127,16 +142,22 @@ class BookingController extends Controller
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
         ]);
-          $booking = Booking::findOrFail($id);
+        $booking = Booking::findOrFail($id);
 
-        $booking = $this->service->updateBooking(
-            Auth::user(),
-            $id,
-            $validated
-        );
-         // 🔐 Authorization
         $this->authorize('update', $booking);
 
+        try {
+            $booking = $this->service->updateBooking(
+                Auth::user(),
+                $id,
+                $validated
+            );
+        } catch (\DomainException $exception) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Selected time must be in the future and within operating hours.',
+            ], 422);
+        }
 
         return response()->json([
             'success' => true,
@@ -147,19 +168,66 @@ class BookingController extends Controller
     /**
      * ❌ Cancel
      */
-    public function cancelBooking($id)
+    public function cancelBooking(Request $request, $id)
     {
-          $booking = Booking::findOrFail($id);
+        $booking = Booking::with('payment')->findOrFail($id);
 
-    // 🔐 Authorization
-    $this->authorize('cancel', $booking);
-      $booking = $this->service->cancelBooking(Auth::user(), $id);
+        // 🔐 Authorization
+        $this->authorize('cancel', $booking);
+
+        $idempotencyKey = $request->header('Idempotency-Key');
+
+        if ($booking->status === BookingStatus::Confirmed
+            && $booking->payment?->status === PaymentStatus::Paid) {
+            Validator::make(
+                ['idempotency_key' => $idempotencyKey],
+                ['idempotency_key' => ['required', 'string', 'max:255']],
+            )->validate();
+        }
+
+        $booking = $this->service->cancelBooking($request->user(), $id, $idempotencyKey);
+
+        $refundStatus = $booking->getAttribute('refund_operation_status');
+        if ($refundStatus !== null && in_array($refundStatus, [
+            'processing', 'unknown', 'pending', 'requires_action',
+        ], true)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Cancellation is awaiting refund confirmation.',
+                'refund_operation' => [
+                    'id' => $booking->getAttribute('refund_operation_id'),
+                    'status' => $refundStatus,
+                ],
+                'data' => $booking,
+            ], 202);
+        }
+
+        if ($refundStatus !== null && in_array($refundStatus, ['failed', 'canceled'], true)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'The refund was not completed; the booking remains unchanged.',
+                'refund_operation' => [
+                    'id' => $booking->getAttribute('refund_operation_id'),
+                    'status' => $refundStatus,
+                ],
+                'data' => $booking,
+            ], 409);
+        }
 
 
-        return response()->json([
+        $response = [
             'success' => true,
-            'data' => $booking
-        ]);
+            'data' => $booking,
+        ];
+
+        if ($refundStatus !== null) {
+            $response['refund_operation'] = [
+                'id' => $booking->getAttribute('refund_operation_id'),
+                'status' => $refundStatus,
+            ];
+        }
+
+        return response()->json($response);
     }
     public function status($id)
     {

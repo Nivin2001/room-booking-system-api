@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -26,14 +27,30 @@ class UserController extends Controller
             'role' => 'required|in:admin,staff,customer'
         ]);
 
-        // only admin may change roles
-        $this->authorize('admin');
+        abort_unless($request->user()?->role === 'admin', 403);
 
-        $user = User::findOrFail($id);
+        $conflict = false;
+        $user = DB::transaction(function () use ($id, $request, &$conflict): User {
+            $user = User::query()->lockForUpdate()->findOrFail($id);
 
-        $user->update([
-            'role' => $request->role
-        ]);
+            if ($user->role === 'staff'
+                && $request->role !== 'staff'
+                && $user->assignedSpaces()->exists()) {
+                $conflict = true;
+
+                return $user;
+            }
+
+            $user->update(['role' => $request->role]);
+
+            return $user;
+        }, 3);
+
+        if ($conflict) {
+            return response()->json([
+                'message' => 'Reassign this staff member’s spaces before changing their role.',
+            ], 409);
+        }
 
         return response()->json([
             'message' => 'User role updated',
@@ -44,15 +61,30 @@ class UserController extends Controller
     // ❌ Delete user
     public function destroy($id)
     {
-        // only admin can delete users
-        $this->authorize('admin');
+        abort_unless(request()->user()?->role === 'admin', 403);
 
-        $user = User::findOrFail($id);
-        if ($user->role === 'admin') {
-            return response()->json(['message' => 'Cannot delete admin'], 403);
+        $result = DB::transaction(function () use ($id): array {
+            $user = User::query()->lockForUpdate()->findOrFail($id);
+            if ($user->role === 'admin') {
+                return ['status' => 403, 'message' => 'Cannot delete admin'];
+            }
+
+            if ($user->assignedSpaces()->exists()) {
+                return ['status' => 409, 'message' => 'Reassign this staff member’s spaces before deleting this account.'];
+            }
+
+            if ($user->createdSpaces()->exists()) {
+                return ['status' => 409, 'message' => 'This account is recorded as the creator of existing spaces and cannot be deleted.'];
+            }
+
+            $user->delete();
+
+            return ['status' => 200, 'message' => null];
+        }, 3);
+
+        if ($result['status'] !== 200) {
+            return response()->json(['message' => $result['message']], $result['status']);
         }
-
-        $user->delete();
 
         return response()->json([
             'message' => 'User deleted'

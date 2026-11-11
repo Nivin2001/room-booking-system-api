@@ -27,12 +27,18 @@ class BookingRejectedNotification extends Notification implements ShouldQueue
 
     public function toMail($notifiable)
     {
-        return (new MailMessage)
+        $message = (new MailMessage)
             ->subject('Booking Rejected ❌')
             ->line('Your booking has been rejected.')
             ->line('Space ID: ' . $this->booking->space_id)
             ->line('Start: ' . $this->booking->start_time)
             ->line('End: ' . $this->booking->end_time);
+
+        if (filled($this->reason)) {
+            $message->line('Reason: '.$this->reason);
+        }
+
+        return $message;
     }
 
            public function toDatabase($notifiable)
@@ -41,7 +47,8 @@ class BookingRejectedNotification extends Notification implements ShouldQueue
             'message' => 'Your booking has been rejected',
             'space_id' => $this->booking->space_id,
             'time' => $this->booking->start_time,
-            'time' => $this->booking->end_time
+            'time' => $this->booking->end_time,
+            'reason' => $this->reason,
         ];
     }
 
@@ -57,6 +64,7 @@ class BookingRejectedNotification extends Notification implements ShouldQueue
         'title' => 'Booking Rejected',
         'message' => 'Your booking was rejected.',
         'status' => 'rejected',
+        'reason' => $this->reason,
     ];
 }
 }

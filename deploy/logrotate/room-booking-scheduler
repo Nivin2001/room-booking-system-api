@@ -1,0 +1,10 @@
+/var/log/room-booking/scheduler.log {
+    daily
+    rotate 14
+    compress
+    delaycompress
+    missingok
+    notifempty
+    copytruncate
+    su room-booking room-booking
+}

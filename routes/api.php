@@ -1,22 +1,21 @@
 <?php
 
-use App\Http\Controllers\Api\Admin\BookingController as AdminBookingController;
+use App\Http\Controllers\API\Admin\BookingController as AdminBookingController;
 use App\Http\Controllers\API\AuthController;
-use App\Http\Controllers\Api\Admin\CategoryController;
-use App\Http\Controllers\Api\Admin\DashboardController;
-use App\Http\Controllers\Api\Admin\ReportController;
+use App\Http\Controllers\API\Admin\CategoryController;
+use App\Http\Controllers\API\Admin\DashboardController;
+use App\Http\Controllers\API\Admin\ReportController;
 use App\Http\Controllers\API\Admin\UserController;
-use App\Http\Controllers\Api\Customer\BookingController;
-use App\Http\Controllers\Api\Customer\PaymentController;
-use App\Http\Controllers\Api\Staff\BookingController as StaffBookingController;
-use App\Http\Controllers\Api\Staff\SpaceController;
-use App\Http\Controllers\Api\StripeWebhookController;
+use App\Http\Controllers\API\Customer\BookingController;
+use App\Http\Controllers\API\Customer\PaymentController;
+use App\Http\Controllers\API\Staff\BookingController as StaffBookingController;
+use App\Http\Controllers\API\Staff\SpaceController;
+use App\Http\Controllers\API\StripeWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // public route
 Route::prefix('v1')->group(function () {
-    Route::get('/test-mail', [AdminBookingController::class, 'testMail']);
     // 🔓 Public
     Route::post('login', [AuthController::class, 'login']);
     Route::post('register', [AuthController::class, 'register']);
@@ -83,7 +82,7 @@ Route::prefix('v1')->group(function () {
         Route::patch('/bookings/{id}/approve', [StaffBookingController::class, 'approve']);
         Route::patch('/bookings/{id}/reject', [StaffBookingController::class, 'reject']);
 
-        // 🏢 Manage Spaces (As staff can apply crud in this modules)
+        // Staff may read their assigned spaces; space configuration remains admin-only by policy.
         Route::get('spaces', [SpaceController::class, 'index']);
         Route::post('/spaces', [SpaceController::class, 'store']);
         Route::put('/spaces/{id}', [SpaceController::class, 'update']);
